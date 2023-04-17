@@ -13,7 +13,21 @@
 7. Выполнить развертывание наилучшей модели.
 
 #### Характеристика датасета
-...
+Датасет содержит 1000 изображений в каждой категории (800 изображений в обучающей выборке и по 100 изображений в валидационной и тестовой):
+* Изображения High-Resolution
+* Уменьшенные изображения интерполяцией, коэффициент x2
+* Уменьшенные изображения интерполяцией, коэффициент x3
+* Уменьшенные изображения интерполяцией, коэффициент x4
+
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photoes.png" width="400">
+Рисунок 1. Распределение первых 10-ти фотографий относительно параметров Entropy и Complexity
+
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/%D0%A1%D0%BB%D0%BE%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%8C.png" width="400">
+Рисунок 2. Увеличение Complexity с уменьшением изображения (черный - x4, зеленый - x3, красный - x2, синий - HR)
+
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/%D0%AD%D0%BD%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%8F.png" width="400">
+Рисунок 3. Уменьшение Entropy с уменьшением изображения (черный - x4, зеленый - x3, красный - x2, синий - HR)
+
 #### Источники
 * [Датасет](https://data.vision.ee.ethz.ch/cvl/DIV2K/)
 * [Репозиторий проекта](https://github.com/kivirciks/super-resolution)
