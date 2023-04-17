@@ -44,4 +44,4 @@
 
 ##### Диаграмма компонентов
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Component.png" width="400">
-Рисунок 4. Диаграмма компонентов
+Рисунок 5. Диаграмма компонентов
