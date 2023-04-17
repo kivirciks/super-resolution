@@ -36,3 +36,12 @@
 #### Источники
 * [Датасет](https://data.vision.ee.ethz.ch/cvl/DIV2K/)
 * [Репозиторий проекта](https://github.com/kivirciks/super-resolution)
+
+#### UML-диаграммы
+##### Диаграмма активностей
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Workflow.png" width="600">
+Рисунок 4. Диаграмма активностей
+
+##### Диаграмма компонентов
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Component.png" width="400">
+Рисунок 4. Диаграмма компонентов
