@@ -39,7 +39,7 @@
 
 #### UML-диаграммы
 ##### Диаграмма активностей
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Workflow.png" width="600">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Workflow.png" width="1000">
 Рисунок 4. Диаграмма активностей
 
 ##### Диаграмма компонентов
