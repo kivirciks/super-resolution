@@ -18,6 +18,8 @@ jobs:
         env:
           KAGGLE_TOKEN: ${{ secrets.KAGGLE_TOKEN }}
         run: |
+          os.environ['KAGGLE_USERNAME'] = 'username'
+          os.environ['KAGGLE_KEY'] = 'key'
           pip install kaggle
           mkdir $HOME/.kaggle
           echo $KAGGLE_TOKEN > $HOME/.kaggle/kaggle.json
