@@ -20,9 +20,9 @@ jobs:
         run: |
           pip install kaggle
           mkdir $HOME/.kaggle
-          echo $KAGGLE_TOKEN > $HOME/.kaggle/
-          kaggle datasets download -d joeho/div2k_bicubic_x4
+          echo $KAGGLE_TOKEN > $HOME/.kaggle/kaggle.json
+          kaggle datasets download -d chenqizhou/div2k-bicubic-x4
           
           mkdir -p assets/source-data/
           sudo apt-get install unzip
-          unzip div2k_bicubic_x4.zip -d assets/source-data/
+          unzip div2k-bicubic-x4.zip -d assets/source-data/
