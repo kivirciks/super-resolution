@@ -21,10 +21,11 @@ jobs:
           pip install kaggle
           mkdir $HOME/.kaggle
           echo $KAGGLE_TOKEN > $HOME/.kaggle/kaggle.json
-          kaggle datasets download -d joeho/DIV2K_bicubic_x4
+          kaggle datasets download -d joeho/div2k_bicubic_x4
+          
           mkdir -p assets/source-data/
           sudo apt-get install unzip
-          unzip DIV2K_bicubic_x4.zip -d assets/source-data/
+          unzip div2k_bicubic_x4.zip -d assets/source-data/
 
 # Controls when the workflow will run
 #on:
