@@ -10,7 +10,7 @@ jobs:
         run: pip install kaggle
       - name: download dataset
         env:
-          KAGGLE_USERNAME: viacheslavgorash
+          KAGGLE_USERNAME: avstrokova
           KAGGLE_KEY: ${{secrets.KAGGLEKEY}}
         run: kaggle datasets download joe1995/div2k-dataset
       - name: unpack dataset archive
