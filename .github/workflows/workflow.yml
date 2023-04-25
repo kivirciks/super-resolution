@@ -1,17 +1,17 @@
-name: Workflow
+name: Dataset Workflow
 on: [workflow_dispatch]
 jobs:
   LoadDataset:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content
-      - run: pip install kaggle
-      - run: mkdir ~/.kaggle
-      - run: cp ./kaggle.json ~/.kaggle
+        uses: actions/checkout@v3
+      - name: install kaggle API
+        run: pip install kaggle
       - name: download dataset
         env:
-          KAGGLE_USERNAME: avstrokova
+          KAGGLE_USERNAME: viacheslavgorash
           KAGGLE_KEY: ${{secrets.KAGGLEKEY}}
-      - run: kaggle datasets download joe1995/div2k-dataset
-      - run: unzip div2k-dataset.zip
+        run: kaggle datasets download joe1995/div2k-dataset
+      - name: unpack dataset archive
+        run: unzip joe1995/div2k-dataset.zip
