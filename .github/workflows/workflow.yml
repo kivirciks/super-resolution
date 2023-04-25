@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: install kaggle API
         run: pip install kaggle
       - name: download dataset
@@ -14,4 +14,10 @@ jobs:
           KAGGLE_KEY: ${{secrets.KAGGLEKEY}}
         run: kaggle datasets download joe1995/div2k-dataset
       - name: unpack dataset archive
-        run: unzip joe1995/div2k-dataset.zip
+        run: unzip div2k-dataset.zip
+      - name: install script requirements
+        run: pip install -r src/requirements_preprocessing.txt
+      - name: fill database
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
