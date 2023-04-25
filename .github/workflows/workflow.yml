@@ -12,8 +12,8 @@ jobs:
       - name: mkdir
         run: mkdir ~/.kaggle
       - name: cp
-        run: cp kaggle.json ~/.kaggle/
+        run: cp super-resolution/pictures/kaggle.json
       - name: chmod
-        run: chmod 600 ~/.kaggle/kaggle.json
+        run: chmod 600 ~/kaggle.json
       - name: download
         run: kaggle datasets download joe1995/div2k-dataset
