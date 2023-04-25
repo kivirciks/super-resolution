@@ -1,28 +1,13 @@
 name: Workflow
-run-name: deploying model for ${{ github.actor }}
-on: [push]
+on: [workflow_dispatch]
 jobs:
-  pull:
+  LoadDataset:
     runs-on: ubuntu-latest
     steps:
-      - name: cache source data
-        id: cache-source-data
-        uses: actions/cache@v3
-        with:
-          path: assets/source-data
-          key: source-dataset
-
-      # Download dataset
-      - name: download source data
-        if: steps.cache-source-data.outputs.cache-hit != 'true'
-        env:
-          KAGGLE_USERNAME: avstrokova
-          KAGGLE_TOKEN: ${{ secrets.KAGGLE_TOKEN }}
-        run: |
-          pip install kaggle
-          mkdir $HOME/.kaggle
-          echo $KAGGLE_TOKEN > $HOME/.kaggle/kaggle.json
-          kaggle datasets download -d chenqizhou/div2k-bicubic-x4
-          mkdir -p assets/source-data/
-          sudo apt-get install unzip
-          unzip chenqizhou/div2k-bicubic-x4.zip -d assets/source-data/
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content
+      - run: pip install kaggle
+      - run: mkdir ~/.kaggle
+      - run: cp ./kaggle.json ~/.kaggle
+      - run: kaggle datasets download joe1995/div2k-dataset
+      - run: unzip div2k-dataset.zip
