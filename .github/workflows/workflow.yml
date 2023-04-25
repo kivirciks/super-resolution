@@ -1,28 +1,18 @@
-name: evaluate
-run-name: deploying model for ${{ github.actor }}
-on: [push]
+
+name: Dataset Workflow
+on: [workflow_dispatch]
 jobs:
-  pull:
+  LoadDataset:
     runs-on: ubuntu-latest
     steps:
-      - name: cache source data
-        id: cache-source-data
-        uses: actions/cache@v3
-        with:
-          path: assets/source-data
-          key: source-dataset
-
-      # Download dataset
-      - name: download source data
-        if: steps.cache-source-data.outputs.cache-hit != 'true'
+      - name: checkout repo content
+        uses: actions/checkout@v2
+      - name: install kaggle API
+        run: pip install kaggle
+      - name: download dataset
         env:
-          KAGGLE_USERNAME: avstrokova
-          KAGGLE_TOKEN: ${{ secrets.KAGGLE_TOKEN }}
-        run: |
-          pip install kaggle
-          mkdir $HOME/.kaggle
-          echo $KAGGLE_TOKEN > $HOME/.kaggle/kaggle.json
-          kaggle datasets download -d advaypatil/youtube-statistics
-          mkdir -p assets/source-data/
-          sudo apt-get install unzip
-          unzip youtube-statistics.zip -d assets/source-data/
+          KAGGLE_USERNAME: viacheslavgorash
+          KAGGLE_KEY: ${{secrets.KAGGLEKEY}}
+        run: kaggle datasets download leenardeshmukh/curriculum-vitae
+      - name: unpack dataset archive
+        run: unzip curriculum-vitae.zip
