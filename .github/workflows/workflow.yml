@@ -8,11 +8,12 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v2
       - name: install kaggle API
-        run: pip install kaggle
-      - name: download dataset
-        env:
-          KAGGLE_USERNAME: viacheslavgorash
-          KAGGLE_KEY: ${{secrets.KAGGLEKEY}}
-        run: kaggle datasets download leenardeshmukh/curriculum-vitae
-      - name: unpack dataset archive
-        run: unzip curriculum-vitae.zip
+        run: pip install -q kaggle
+      - name: mkdir
+        run: mkdir ~/.kaggle
+      - name: cp
+        run: cp kaggle.json ~/.kaggle/
+      - name: chmod
+        run: chmod 600 ~/.kaggle/kaggle.json
+      - name: download
+        run: kaggle datasets download joe1995/div2k-dataset
