@@ -1,23 +1,27 @@
-name: Dataset Workflow
-on: [workflow_dispatch]
+name: evaluate
+run-name: deploying model for ${{ github.actor }}
+on: [push]
 jobs:
-  LoadDataset:
+  pull:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repo content
-        uses: actions/checkout@v2
-      - name: install kaggle API
-        run: pip install kaggle
-      - name: download dataset
+      - name: cache source data
+        id: cache-source-data
+        uses: actions/cache@v3
+        with:
+          path: assets/source-data
+          key: source-dataset
+
+      # Download dataset
+      - name: download source data
+        if: steps.cache-source-data.outputs.cache-hit != 'true'
         env:
-          KAGGLE_USERNAME: avstrokova
-          KAGGLE_KEY: ${{secrets.KAGGLEKEY}}
-        run: kaggle datasets download joe1995/div2k-dataset
-      - name: unpack dataset archive
-        run: unzip div2k-dataset.zip
-      - name: install script requirements
-        run: pip install -r src/requirements_preprocessing.txt
-      - name: fill database
-        env:
-          DB_USERNAME: github
-          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+          KAGGLE_TOKEN: ${{ secrets.KAGGLE_TOKEN }}
+        run: |
+          pip install kaggle
+          mkdir $HOME/.kaggle
+          echo $KAGGLE_TOKEN > $HOME/.kaggle/kaggle.json
+          kaggle datasets download -d advaypatil/youtube-statistics
+          mkdir -p assets/source-data/
+          sudo apt-get install unzip
+          unzip youtube-statistics.zip -d assets/source-data/
