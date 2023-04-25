@@ -16,6 +16,7 @@ jobs:
       - name: download source data
         if: steps.cache-source-data.outputs.cache-hit != 'true'
         env:
+          KAGGLE_USERNAME: viacheslavgorash
           KAGGLE_TOKEN: ${{ secrets.KAGGLE_TOKEN }}
         run: |
           pip install kaggle
