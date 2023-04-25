@@ -8,6 +8,5 @@ jobs:
         uses: actions/checkout@v2 # checkout the repository content
       - run: pip install kaggle
       - run: mkdir ~/.kaggle
-      - run: cp ./kaggle.json ~/.kaggle
       - run: kaggle datasets download joe1995/div2k-dataset
       - run: unzip div2k-dataset.zip
