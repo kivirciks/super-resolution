@@ -1,4 +1,3 @@
-
 name: Dataset Workflow
 on: [workflow_dispatch]
 jobs:
@@ -12,7 +11,7 @@ jobs:
       - name: mkdir
         run: mkdir ~/.kaggle
       - name: cp
-        run: cp super-resolution/pictures/kaggle.json
+        run: super-resolution/pictures/kaggle.json
       - name: chmod
         run: chmod 600 ~/kaggle.json
       - name: download
