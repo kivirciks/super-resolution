@@ -7,12 +7,11 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v2
       - name: install kaggle API
-        run: pip install -q kaggle
-      - name: mkdir
-        run: mkdir ~/.kaggle
-      - name: cp
-        run: super-resolution/pictures/kaggle.json
-      - name: chmod
-        run: chmod 600 ~/kaggle.json
-      - name: download
+        run: pip install kaggle
+      - name: download dataset
+        env:
+          KAGGLE_USERNAME: avstrokova
+          KAGGLE_KEY: 5e2c622209c9f22356e8e944eebba69c
         run: kaggle datasets download joe1995/div2k-dataset
+      - name: unpack dataset archive
+        run: unzip div2k-dataset.zip
