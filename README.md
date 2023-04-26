@@ -45,3 +45,7 @@
 ##### Диаграмма компонентов
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Component.png" width="400">
 Рисунок 5. Диаграмма компонентов
+
+##### Диаграмма развертывания
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deployment.png.png" width="400">
+Рисунок 6. Диаграмма развертывания
