@@ -15,3 +15,6 @@ jobs:
         run: kaggle datasets download avstrokova/div2-k-dataset-for-super-resolution
       - name: unpack dataset archive
         run: unzip div2-k-dataset-for-super-resolution.zip
+
+      - name: preprosessing
+        run: superresolution-datasetpreprocessing.ipynb
