@@ -16,5 +16,14 @@ jobs:
       - name: unpack dataset archive
         run: unzip div2-k-dataset-for-super-resolution.zip
 
-      - name: preprosessing
-        run: superresolution-datasetpreprocessing.ipynb
+  PreprocessDataset:
+    runs-on: ubuntu-latest
+    needs: LoadDataset
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2
+      - name: process_data
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python superresolution-datasetpreprocessing.ipynb
