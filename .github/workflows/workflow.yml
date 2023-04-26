@@ -26,4 +26,4 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python superresolution-datasetpreprocessing.ipynb
+        run: python datasetpreprocessing.py
