@@ -12,6 +12,6 @@ jobs:
         env:
           KAGGLE_USERNAME: avstrokova
           KAGGLE_KEY: 5e2c622209c9f22356e8e944eebba69c
-        run: kaggle datasets download joe1995/div2k-dataset
+        run: kaggle datasets download avstrokova/div2-k-dataset-for-super-resolution
       - name: unpack dataset archive
-        run: unzip div2k-dataset.zip
+        run: unzip div2-k-dataset-for-super-resolution.zip
