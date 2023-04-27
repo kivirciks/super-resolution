@@ -40,13 +40,14 @@ def generate_patches(src_path, files, set_path, crop_size, img_format, max_patch
     img = Image.open(img_path).convert('RGB')
 
     name, _ = files.split('.')
-    filedir = os.path.join(set_path, 'a')
-    if not dir_exists(filedir):
-        mkdir(filedir)
+        
+    filedirb = os.path.join(set_path, 'b')
+    if not dir_exists(filedirb):
+        mkdir(filedirb)
 
     img = np.array(img)
     h, w = img.shape[0], img.shape[1]
-   
+
     if crop_size == None:
         img = np.copy(img)
         img_patches = np.expand_dims(img, 0)
@@ -57,13 +58,18 @@ def generate_patches(src_path, files, set_path, crop_size, img_format, max_patch
         img_patches = crop(img, crop_size)
 
     # print('Cropped')
+
     n = 0
+
     for i in range(min(len(img_patches), max_patches)):
-        img = Image.fromarray(img_patches[i]).convert('RGB')
-        img.save(
-            os.path.join(filedir, '{}_{}.{}'.format(name, i, img_format))
+        img_grey = Image.fromarray(img_patches[i]).convert('RGB')
+        
+        img_grey.save(
+            os.path.join(filedirb, '{}_{}.{}'.format(name, i, img_format))
         )
+
         n += 1
+
     return n
 
 def main(target_dataset_folder, dataset_path, crop_size, img_format, max_patches, max_n):
@@ -79,6 +85,7 @@ def main(target_dataset_folder, dataset_path, crop_size, img_format, max_patches
         raise(RuntimeError('Source folder not found, please put your dataset there'))
 
     set_path = target_dataset_folder
+
     mkdir(set_path)
 
     img_files = os.listdir(src_path)
@@ -94,12 +101,16 @@ def main(target_dataset_folder, dataset_path, crop_size, img_format, max_patches
         bar.set_description(desc='itr: %d/%d' % (
             i, max
         ))
+
         j += k
+
         if j >= max_n:
             # Stop the process
             print('Dataset count has been fullfuled')
             break
+
         i += 1
+
     print('Dataset Created')
 
-main('dataset/train', '../input/div2k-dataset/DIV2K_train_HR/DIV2K_train_HR/', [128, 128], 'PNG', 15, 10000)
+main('dataset/train', '../input/div2kembeddedgrey', [128, 128], 'PNG', 15, 10000)
