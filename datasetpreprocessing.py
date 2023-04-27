@@ -1,75 +1,114 @@
-from IPython.display import clear_output 
-!python3 --version
-!pip install opencv-python-headless
-!pip install numpy
-!pip install tqdm
-!pip install torch
-!pip install natsort
-!pip install typing
-!pip install torchvision
-!pip install scipy
-clear_output()
-
-import multiprocessing
+import argparse
+from PIL import Image, ImageOps
 import os
-import shutil
-import cv2
 import numpy as np
+from math import floor
+from PIL import Image
 from tqdm import tqdm
+import torch
+from torchvision import transforms
+import random
 
-def main(args) -> None:
-    if os.path.exists(args["output_dir"]):
-        shutil.rmtree(args["output_dir"])
-    os.makedirs(args["output_dir"])
-    
-    # Get all image paths
-    image_file_names = os.listdir(args["images_dir"])
+def tensor2img(tensor):
+    tensor = tensor.cpu()
+    tensor = tensor.detach().numpy()
+    tensor = np.squeeze(tensor)
+    tensor = np.moveaxis(tensor, 0, 2)
+    tensor = (tensor * 255)  # + 0.5  # ? add 0.5 to rounding
+    tensor = tensor.clip(0, 255).astype(np.uint8)
 
-    # Splitting images with multiple threads
-    progress_bar = tqdm(total=len(image_file_names), unit="image", desc="Prepare split image")
-    workers_pool = multiprocessing.Pool(args["num_workers"])
-#     workers_pool.apply_async(worker, args=(image_file_names[0], args), callback=lambda arg: progress_bar.update(1))
-    for image_file_name in image_file_names:
-#         print(image_file_name)
-        workers_pool.apply_async(worker, args=(image_file_name, args), callback=lambda arg: progress_bar.update(1))
-    workers_pool.close()
-    workers_pool.join()
-    progress_bar.close()
-    
-    
-def worker(image_file_name, args) -> None:
-#     print("starting")
-    image = cv2.imread(f"{args['images_dir']}/{image_file_name}", cv2.IMREAD_UNCHANGED)
-#     print("starting2")
-    image_height, image_width = image.shape[0:2]
-#     print(str(image_height) + "  " + str(image_width) + "\n")
-#     print(args["image_size"])
-    index = 1
-    if image_height >= args["image_size"] and image_width >= args["image_size"]:
-        for pos_y in range(0, image_height - args["image_size"] + 1, args["step"]):
-            for pos_x in range(0, image_width - args["image_size"] + 1, args["step"]):
-#                 print("HELLO1")
-                # Crop
-                crop_image = image[pos_y: pos_y + args["image_size"], pos_x:pos_x + args["image_size"], ...]
-#                 print("hello2")
-                crop_image = np.ascontiguousarray(crop_image)
-#                 print("HELLO3")
-                # Save image
-#                 print(f"{args['output_dir']}/{image_file_name.split('.')[-2]}_{index:04d}.{image_file_name.split('.')[-1]}")
-                cv2.imwrite(f"{args['output_dir']}/{image_file_name.split('.')[-2]}_{index:04d}.{image_file_name.split('.')[-1]}", crop_image)
+    img = Image.fromarray(tensor)
+    return img
 
-                index += 1
-    print("done")
+def mkdir(directory, mode=0o777):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        os.chmod(directory, mode=mode)
+
+def dir_exists(directory):
+    return os.path.exists(directory)
+
+def crop(img_arr, block_size):
+    h_b, w_b = block_size
+    v_splited = np.vsplit(img_arr, img_arr.shape[0]//h_b)
+    h_splited = np.concatenate(
+        [np.hsplit(col, img_arr.shape[1]//w_b) for col in v_splited], 0)
+    return h_splited
+
+def generate_patches(src_path, files, set_path, crop_size, img_format, max_patches):
+    img_path = os.path.join(src_path, files)
+    img = Image.open(img_path).convert('RGB')
+
+    name, _ = files.split('.')
+    filedir = os.path.join(set_path, 'a')
+    if not dir_exists(filedir):
+        mkdir(filedir)
+
+    img = np.array(img)
+    h, w = img.shape[0], img.shape[1]
+   
+    if crop_size == None:
+        img = np.copy(img)
+        img_patches = np.expand_dims(img, 0)
+    else:
+        rem_h = (h % crop_size[0])
+        rem_w = (w % crop_size[1])
+        img = img[:h-rem_h, :w-rem_w]
+        img_patches = crop(img, crop_size)
+
+    # print('Cropped')
+
+    n = 0
     
     
-if __name__ == "__main__":
-#     --images_dir ../data/ImageNet/original --output_dir ../data/ImageNet/SRGAN/train --image_size 128 --step 64 --num_workers 16"
-#     parser = argparse.ArgumentParser(description="Prepare database scripts.")
-#     parser.add_argument("--images_dir", type=str, help="Path to input image directory.")
-#     parser.add_argument("--output_dir", type=str, help="Path to generator image directory.")
-#     parser.add_argument("--image_size", type=int, help="Low-resolution image size from raw image.")
-#     parser.add_argument("--step", type=int, help="Crop image similar to sliding window.")
-#     parser.add_argument("--num_workers", type=int, help="How many threads to open at the same time.")
-#     args = parser.parse_args()
-    args={"images_dir":"/kaggle/input/div2-k-dataset-for-super-resolution","output_dir":"/kaggle/working/div2-k-dataset-for-super-resolution/new_image","image_size":128,"step":64,"num_workers":16}
-    main(args)
+    for i in range(min(len(img_patches), max_patches)):
+        img = Image.fromarray(img_patches[i]).convert('RGB')
+        
+        img.save(
+            os.path.join(filedir, '{}_{}.{}'.format(name, i, img_format))
+        )
+
+        n += 1
+
+    return n
+
+def main(target_dataset_folder, dataset_path, crop_size, img_format, max_patches, max_n):
+    print('[ Creating Dataset ]')
+    print('Crop Size : {}'.format(crop_size))
+    print('Target       : {}'.format(target_dataset_folder))
+    print('Dataset       : {}'.format(dataset_path))
+    print('Format    : {}'.format(img_format))
+    print('Max N    : {}'.format(max_n))
+
+    src_path = dataset_path
+    if not dir_exists(src_path):
+        raise(RuntimeError('Source folder not found, please put your dataset there'))
+
+    set_path = target_dataset_folder
+    mkdir(set_path)
+
+    img_files = os.listdir(src_path)
+
+    max = len(img_files)
+    bar = tqdm(img_files)
+    i = 0
+    j = 0
+    for files in bar:
+        k = generate_patches(src_path, files, set_path,
+                             crop_size, img_format, max_patches)
+
+        bar.set_description(desc='itr: %d/%d' % (
+            i, max
+        ))
+
+        j += k
+            if j >= max_n:
+            # Stop the process
+            print('Dataset count has been fullfuled')
+            break
+
+        i += 1
+
+    print('Dataset Created')
+
+main('dataset/train', '../input/div2k-dataset/DIV2K_train_HR/DIV2K_train_HR/', [128, 128], 'PNG', 15, 10000)
