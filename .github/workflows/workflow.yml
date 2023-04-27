@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
+      - name: install Pillow
+        run: pip install Pillow
       - name: process_data
         env:
           DB_USERNAME: github
