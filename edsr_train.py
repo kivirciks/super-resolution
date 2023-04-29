@@ -3,6 +3,10 @@ import tensorflow as tf
 from tensorflow.keras.layers import Add, Conv2D, Input, Lambda
 from tensorflow.keras.models import Model
 
+# Непосредственно получение датасета
+train = DIV2K(scale=4, downgrade='bicubic', subset='train')
+train_ds = train.dataset(batch_size=16, random_transform=True)
+
 # Усреднение RGB каналов
 DIV2K_RGB_MEAN = np.array([0.4488, 0.4371, 0.4040]) * 255
 
