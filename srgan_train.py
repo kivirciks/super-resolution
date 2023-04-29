@@ -200,76 +200,203 @@ train_ds = train.dataset(batch_size=16, random_transform=True)
 # Усреднение RGB каналов
 DIV2K_RGB_MEAN = np.array([0.4488, 0.4371, 0.4040]) * 255
 
-# Задание модели EDSR
-def edsr(scale, num_filters=64, num_res_blocks=8, res_block_scaling=None):
-    x_in = Input(shape=(None, None, 3))
-    x = Lambda(normalize)(x_in)
+from tensorflow.python.keras.layers import Add, BatchNormalization, Conv2D, Dense, Flatten, Input, LeakyReLU, PReLU, Lambda
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.applications.vgg19 import VGG19
 
-    # Задание слоев сверточной нейронной сети
-    x = b = Conv2D(num_filters, 3, padding='same')(x)
-    for i in range(num_res_blocks):
-        b = res_block(b, num_filters, res_block_scaling)
-    b = Conv2D(num_filters, 3, padding='same')(b)
-    x = Add()([x, b])
-
-    x = upsample(x, scale, num_filters)
-    x = Conv2D(3, 3, padding='same')(x)
-
-    x = Lambda(denormalize)(x)
-    return Model(x_in, x, name="edsr")
-
-# Задание выходных слоев EDSR
-def res_block(x_in, filters, scaling):
-    x = Conv2D(filters, 3, padding='same', activation='relu')(x_in)
-    x = Conv2D(filters, 3, padding='same')(x)
-    if scaling:
-        x = Lambda(lambda t: t * scaling)(x)
-    x = Add()([x_in, x])
-    return x
-
-# Субпиксельная свертка
-def upsample(x, scale, num_filters):
-    def upsample_1(x, factor, **kwargs):
-        x = Conv2D(num_filters * (factor ** 2), 3, padding='same', **kwargs)(x)
-        return Lambda(pixel_shuffle(scale=factor))(x)
-    if scale == 2:
-        x = upsample_1(x, 2, name='conv2d_1_scale_2')
-    elif scale == 3:
-        x = upsample_1(x, 3, name='conv2d_1_scale_3')
-    elif scale == 4:
-        x = upsample_1(x, 2, name='conv2d_1_scale_2')
-        x = upsample_1(x, 2, name='conv2d_2_scale_2')
-    return x
-
-# Перемешивание пикселей
 def pixel_shuffle(scale):
     return lambda x: tf.nn.depth_to_space(x, scale)
 
-# Нормализация
-def normalize(x):
-    return (x - DIV2K_RGB_MEAN) / 127.5
+def normalize_01(x):
+    """Normalizes RGB images to [0, 1]."""
+    return x / 255.0
 
-# Денормализация
-def denormalize(x):
-    return x * 127.5 + DIV2K_RGB_MEAN
+def normalize_m11(x):
+    """Normalizes RGB images to [-1, 1]."""
+    return x / 127.5 - 1
 
-import os
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.optimizers.schedules import PiecewiseConstantDecay
+def denormalize_m11(x):
+    """Inverse of normalize_m11."""
+    return (x + 1) * 127.5
 
-# Создание директории для сохранения весов
-weights_dir = 'weights/EDSR'
-os.makedirs(weights_dir, exist_ok=True)
+LR_SIZE = 24
+HR_SIZE = 96
 
-# EDSR baseline
-model_edsr = edsr(scale=4, num_res_blocks=16)
 
-#  Оптимизатор Адама с планировщиком, который вдвое снижает скорость обучения после 200 000 шагов
-optim_edsr = Adam(learning_rate=PiecewiseConstantDecay(boundaries=[200000], values=[1e-4, 5e-5]))
+def upsample(x_in, num_filters):
+    x = Conv2D(num_filters, kernel_size=3, padding='same')(x_in)
+    x = Lambda(pixel_shuffle(scale=2))(x)
+    return PReLU(shared_axes=[1, 2])(x)
 
-# Компиляция и обучение модели для 300 000 шагов
-model_edsr.compile(optimizer=optim_edsr, loss='mean_absolute_error')
-model_edsr.fit(train_ds, epochs=300, steps_per_epoch=1000)
 
-# Сохранение весов
-model_edsr.save_weights(os.path.join(weights_dir, 'weights-edsr-16-x4.h5'))
+def res_block(x_in, num_filters, momentum=0.8):
+    x = Conv2D(num_filters, kernel_size=3, padding='same')(x_in)
+    x = BatchNormalization(momentum=momentum)(x)
+    x = PReLU(shared_axes=[1, 2])(x)
+    x = Conv2D(num_filters, kernel_size=3, padding='same')(x)
+    x = BatchNormalization(momentum=momentum)(x)
+    x = Add()([x_in, x])
+    return x
+
+
+def sr_resnet(num_filters=64, num_res_blocks=16):
+    x_in = Input(shape=(None, None, 3))
+    x = Lambda(normalize_01)(x_in)
+
+    x = Conv2D(num_filters, kernel_size=9, padding='same')(x)
+    x = x_1 = PReLU(shared_axes=[1, 2])(x)
+
+    for _ in range(num_res_blocks):
+        x = res_block(x, num_filters)
+
+    x = Conv2D(num_filters, kernel_size=3, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Add()([x_1, x])
+
+    x = upsample(x, num_filters * 4)
+    x = upsample(x, num_filters * 4)
+
+    x = Conv2D(3, kernel_size=9, padding='same', activation='tanh')(x)
+    x = Lambda(denormalize_m11)(x)
+
+    return Model(x_in, x)
+
+
+generator = sr_resnet
+
+
+def discriminator_block(x_in, num_filters, strides=1, batchnorm=True, momentum=0.8):
+    x = Conv2D(num_filters, kernel_size=3, strides=strides, padding='same')(x_in)
+    if batchnorm:
+        x = BatchNormalization(momentum=momentum)(x)
+    return LeakyReLU(alpha=0.2)(x)
+
+
+def discriminator(num_filters=64):
+    x_in = Input(shape=(HR_SIZE, HR_SIZE, 3))
+    x = Lambda(normalize_m11)(x_in)
+
+    x = discriminator_block(x, num_filters, batchnorm=False)
+    x = discriminator_block(x, num_filters, strides=2)
+
+    x = discriminator_block(x, num_filters * 2)
+    x = discriminator_block(x, num_filters * 2, strides=2)
+
+    x = discriminator_block(x, num_filters * 4)
+    x = discriminator_block(x, num_filters * 4, strides=2)
+
+    x = discriminator_block(x, num_filters * 8)
+    x = discriminator_block(x, num_filters * 8, strides=2)
+
+    x = Flatten()(x)
+
+    x = Dense(1024)(x)
+    x = LeakyReLU(alpha=0.2)(x)
+    x = Dense(1, activation='sigmoid')(x)
+
+    return Model(x_in, x)
+
+def vgg_22():
+    return _vgg(5)
+
+def vgg_54():
+    return _vgg(20)
+
+def _vgg(output_layer):
+    vgg = VGG19(input_shape=(None, None, 3), include_top=False)
+    return Model(vgg.input, vgg.layers[output_layer].output)
+
+# Used in content_loss
+mean_squared_error = tf.keras.losses.MeanSquaredError()
+
+# Used in generator_loss and discriminator_loss
+binary_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)
+
+# Model that computes the feature map after the 4th convolution 
+# before the 5th max-pooling layer in VGG19. This is layer 20 in
+# the corresponding Keras model.
+vgg = srgan.vgg_54()
+
+# EDSR model used as generator in SRGAN
+generator = edsr(scale=4, num_res_blocks=16)
+generator.load_weights(os.path.join(weights_dir, 'weights-edsr-16-x4.h5'))
+
+# SRGAN discriminator
+discriminator = srgan.discriminator()
+
+# Optmizers for generator and discriminator. SRGAN will be trained for
+# 200,000 steps and learning rate is reduced from 1e-4 to 1e-5 after
+# 100,000 steps
+schedule = PiecewiseConstantDecay(boundaries=[100000], values=[1e-4, 1e-5])
+generator_optimizer = Adam(learning_rate=schedule)
+discriminator_optimizer = Adam(learning_rate=schedule)
+
+def generator_loss(sr_out):
+    return binary_cross_entropy(tf.ones_like(sr_out), sr_out)
+
+def discriminator_loss(hr_out, sr_out):
+    hr_loss = binary_cross_entropy(tf.ones_like(hr_out), hr_out)
+    sr_loss = binary_cross_entropy(tf.zeros_like(sr_out), sr_out)
+    return hr_loss + sr_loss
+
+@tf.function
+def content_loss(hr, sr):
+    sr = tf.keras.applications.vgg19.preprocess_input(sr)
+    hr = tf.keras.applications.vgg19.preprocess_input(hr)
+    sr_features = vgg(sr) / 12.75
+    hr_features = vgg(hr) / 12.75
+    return mean_squared_error(hr_features, sr_features)
+
+@tf.function
+def train_step(lr, hr):
+    """SRGAN training step.
+    
+    Takes an LR and an HR image batch as input and returns
+    the computed perceptual loss and discriminator loss.
+    """
+    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+        lr = tf.cast(lr, tf.float32)
+        hr = tf.cast(hr, tf.float32)
+
+        # Forward pass
+        sr = generator(lr, training=True)
+        hr_output = discriminator(hr, training=True)
+        sr_output = discriminator(sr, training=True)
+
+        # Compute losses
+        con_loss = content_loss(hr, sr)
+        gen_loss = generator_loss(sr_output)
+        perc_loss = con_loss + 0.001 * gen_loss
+        disc_loss = discriminator_loss(hr_output, sr_output)
+
+    # Compute gradient of perceptual loss w.r.t. generator weights 
+    gradients_of_generator = gen_tape.gradient(perc_loss, generator.trainable_variables)
+    # Compute gradient of discriminator loss w.r.t. discriminator weights 
+    gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+
+    # Update weights of generator and discriminator
+    generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+    discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+
+    return perc_loss, disc_loss
+
+pls_metric = tf.keras.metrics.Mean()
+dls_metric = tf.keras.metrics.Mean()
+
+steps = 200000
+step = 0
+
+# Train SRGAN for 200,000 steps.
+for lr, hr in train_ds.take(steps):
+    step += 1
+
+    pl, dl = train_step(lr, hr)
+    pls_metric(pl)
+    dls_metric(dl)
+
+    if step % 50 == 0:
+        print(f'{step}/{steps}, perceptual loss = {pls_metric.result():.4f}, discriminator loss = {dls_metric.result():.4f}')
+        pls_metric.reset_states()
+        dls_metric.reset_states()
+        
+generator.save_weights(os.path.join(weights_dir, 'weights-edsr-16-x4-fine-tuned.h5'))
