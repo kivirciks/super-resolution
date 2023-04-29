@@ -1,4 +1,4 @@
-name: Dataset Workflow
+name: Main Workflow
 on: [workflow_dispatch]
 jobs:
   LoadDataset:
