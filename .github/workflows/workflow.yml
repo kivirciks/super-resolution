@@ -26,7 +26,7 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python predprocessing.ipynb
+        run: python preprocessing.ipynb
 
   EDSR_Training:
     runs-on: ubuntu-latest
