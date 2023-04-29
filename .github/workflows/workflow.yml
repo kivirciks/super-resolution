@@ -38,8 +38,6 @@ jobs:
         run: pip install numpy
       - name: install tensorflow
         run: pip install tensorflow
-      - name: install os
-        run: pip install os
       - name: training
         env:
           DB_USERNAME: github
