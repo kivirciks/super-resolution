@@ -203,7 +203,7 @@ DIV2K_RGB_MEAN = np.array([0.4488, 0.4371, 0.4040]) * 255
 from tensorflow.python.keras.layers import Add, Conv2D, Dense, Flatten, Input, LeakyReLU, PReLU, Lambda
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.python.keras.models import Model
-from tensorflow.python.keras.applications.vgg19 import VGG19
+import keras.applications.vgg19
 
 def pixel_shuffle(scale):
     return lambda x: tf.nn.depth_to_space(x, scale)
