@@ -27,10 +27,6 @@ jobs:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python preprocessing.ipynb
-      - name: install numpy
-        run: pip install numpy
-      - name: install tensorflow
-        run: pip install tensorflow
 
   EDSR_Training:
     runs-on: ubuntu-latest
@@ -38,6 +34,10 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
+      - name: install numpy
+        run: pip install numpy
+      - name: install tensorflow
+        run: pip install tensorflow
       - name: training
         env:
           DB_USERNAME: github
@@ -50,6 +50,10 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
+      - name: install numpy
+        run: pip install numpy
+      - name: install tensorflow
+        run: pip install tensorflow
       - name: training
         env:
           DB_USERNAME: github
@@ -62,6 +66,10 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
+      - name: install numpy
+        run: pip install numpy
+      - name: install tensorflow
+        run: pip install tensorflow
       - name: training
         env:
           DB_USERNAME: github
