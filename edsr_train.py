@@ -267,9 +267,9 @@ model_edsr = edsr(scale=4, num_res_blocks=16)
 #  Оптимизатор Адама с планировщиком, который вдвое снижает скорость обучения после 200 000 шагов
 optim_edsr = Adam(learning_rate=PiecewiseConstantDecay(boundaries=[200000], values=[1e-4, 5e-5]))
 
-# Компиляция и обучение модели для 300 000 шагов
+# Компиляция и обучение модели для 75 000 шагов
 model_edsr.compile(optimizer=optim_edsr, loss='mean_absolute_error')
-model_edsr.fit(train_ds, epochs=300, steps_per_epoch=1000)
+model_edsr.fit(train_ds, epochs=150, steps_per_epoch=500)
 
 # Сохранение весов
 model_edsr.save_weights(os.path.join(weights_dir, 'weights-edsr-16-x4.h5'))
