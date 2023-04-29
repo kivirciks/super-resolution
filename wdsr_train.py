@@ -200,76 +200,75 @@ train_ds = train.dataset(batch_size=16, random_transform=True)
 # Усреднение RGB каналов
 DIV2K_RGB_MEAN = np.array([0.4488, 0.4371, 0.4040]) * 255
 
-# Задание модели EDSR
-def edsr(scale, num_filters=64, num_res_blocks=8, res_block_scaling=None):
+import tensorflow_addons as tfa
+from tensorflow.python.keras.layers import Add, Conv2D, Input, Lambda
+from tensorflow.python.keras.models import Model
+
+def normalize(x, rgb_mean=DIV2K_RGB_MEAN):
+    return (x - rgb_mean) / 127.5
+
+def denormalize(x, rgb_mean=DIV2K_RGB_MEAN):
+    return x * 127.5 + rgb_mean
+
+def pixel_shuffle(scale):
+    return lambda x: tf.nn.depth_to_space(x, scale)
+
+def wdsr_a(scale, num_filters=32, num_res_blocks=8, res_block_expansion=4, res_block_scaling=None):
+    return wdsr(scale, num_filters, num_res_blocks, res_block_expansion, res_block_scaling, res_block_a)
+
+def wdsr_b(scale, num_filters=32, num_res_blocks=8, res_block_expansion=6, res_block_scaling=None):
+    return wdsr(scale, num_filters, num_res_blocks, res_block_expansion, res_block_scaling, res_block_b)
+
+def wdsr(scale, num_filters, num_res_blocks, res_block_expansion, res_block_scaling, res_block):
     x_in = Input(shape=(None, None, 3))
     x = Lambda(normalize)(x_in)
 
-    # Задание слоев сверточной нейронной сети
-    x = b = Conv2D(num_filters, 3, padding='same')(x)
+    # main branch
+    m = conv2d_weightnorm(num_filters, 3, padding='same')(x)
     for i in range(num_res_blocks):
-        b = res_block(b, num_filters, res_block_scaling)
-    b = Conv2D(num_filters, 3, padding='same')(b)
-    x = Add()([x, b])
+        m = res_block(m, num_filters, res_block_expansion, kernel_size=3, scaling=res_block_scaling)
+    m = conv2d_weightnorm(3 * scale ** 2, 3, padding='same', name=f'conv2d_main_scale_{scale}')(m)
+    m = Lambda(pixel_shuffle(scale))(m)
 
-    x = upsample(x, scale, num_filters)
-    x = Conv2D(3, 3, padding='same')(x)
+    # skip branch
+    s = conv2d_weightnorm(3 * scale ** 2, 5, padding='same', name=f'conv2d_skip_scale_{scale}')(x)
+    s = Lambda(pixel_shuffle(scale))(s)
 
+    x = Add()([m, s])
     x = Lambda(denormalize)(x)
-    return Model(x_in, x, name="edsr")
 
-# Задание выходных слоев EDSR
-def res_block(x_in, filters, scaling):
-    x = Conv2D(filters, 3, padding='same', activation='relu')(x_in)
-    x = Conv2D(filters, 3, padding='same')(x)
+    return Model(x_in, x, name="wdsr")
+
+def res_block_a(x_in, num_filters, expansion, kernel_size, scaling):
+    x = conv2d_weightnorm(num_filters * expansion, kernel_size, padding='same', activation='relu')(x_in)
+    x = conv2d_weightnorm(num_filters, kernel_size, padding='same')(x)
     if scaling:
         x = Lambda(lambda t: t * scaling)(x)
     x = Add()([x_in, x])
     return x
 
-# Субпиксельная свертка
-def upsample(x, scale, num_filters):
-    def upsample_1(x, factor, **kwargs):
-        x = Conv2D(num_filters * (factor ** 2), 3, padding='same', **kwargs)(x)
-        return Lambda(pixel_shuffle(scale=factor))(x)
-    if scale == 2:
-        x = upsample_1(x, 2, name='conv2d_1_scale_2')
-    elif scale == 3:
-        x = upsample_1(x, 3, name='conv2d_1_scale_3')
-    elif scale == 4:
-        x = upsample_1(x, 2, name='conv2d_1_scale_2')
-        x = upsample_1(x, 2, name='conv2d_2_scale_2')
+def res_block_b(x_in, num_filters, expansion, kernel_size, scaling):
+    linear = 0.8
+    x = conv2d_weightnorm(num_filters * expansion, 1, padding='same', activation='relu')(x_in)
+    x = conv2d_weightnorm(int(num_filters * linear), 1, padding='same')(x)
+    x = conv2d_weightnorm(num_filters, kernel_size, padding='same')(x)
+    if scaling:
+        x = Lambda(lambda t: t * scaling)(x)
+    x = Add()([x_in, x])
     return x
 
-# Перемешивание пикселей
-def pixel_shuffle(scale):
-    return lambda x: tf.nn.depth_to_space(x, scale)
+def conv2d_weightnorm(filters, kernel_size, padding='same', activation=None, **kwargs):
+    return tfa.layers.WeightNormalization(Conv2D(filters, kernel_size, padding=padding, activation=activation, **kwargs), data_init=False)
 
-# Нормализация
-def normalize(x):
-    return (x - DIV2K_RGB_MEAN) / 127.5
+# Custom WDSR B model (0.62M parameters)
+model_wdsr = wdsr_b(scale=4, num_res_blocks=32)
 
-# Денормализация
-def denormalize(x):
-    return x * 127.5 + DIV2K_RGB_MEAN
+# Adam optimizer with a scheduler that halfs learning rate after 200,000 steps
+optim_wdsr = Adam(learning_rate=PiecewiseConstantDecay(boundaries=[200000], values=[1e-3, 5e-4]))
 
-import os
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.optimizers.schedules import PiecewiseConstantDecay
+# Compile and train model for 300,000 steps with L1 pixel loss
+model_wdsr.compile(optimizer=optim_wdsr, loss='mean_absolute_error')
+model_wdsr.fit(train_ds, epochs=300, steps_per_epoch=1000)
 
-# Создание директории для сохранения весов
-weights_dir = 'weights/EDSR'
-os.makedirs(weights_dir, exist_ok=True)
-
-# EDSR baseline
-model_edsr = edsr(scale=4, num_res_blocks=16)
-
-#  Оптимизатор Адама с планировщиком, который вдвое снижает скорость обучения после 200 000 шагов
-optim_edsr = Adam(learning_rate=PiecewiseConstantDecay(boundaries=[200000], values=[1e-4, 5e-5]))
-
-# Компиляция и обучение модели для 300 000 шагов
-model_edsr.compile(optimizer=optim_edsr, loss='mean_absolute_error')
-model_edsr.fit(train_ds, epochs=300, steps_per_epoch=1000)
-
-# Сохранение весов
-model_edsr.save_weights(os.path.join(weights_dir, 'weights-edsr-16-x4.h5'))
+# Save weights
+model_wdsr.save_weights(os.path.join(weights_dir, 'weights-wdsr-b-32-x4.h5'))
