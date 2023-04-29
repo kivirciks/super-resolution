@@ -54,6 +54,8 @@ jobs:
         run: pip install numpy
       - name: install tensorflow
         run: pip install tensorflow
+      - name: install tensorflow-addons
+        run: pip install tensorflow-addons
       - name: training
         env:
           DB_USERNAME: github
