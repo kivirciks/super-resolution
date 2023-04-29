@@ -36,6 +36,8 @@ jobs:
         uses: actions/checkout@v2
       - name: install numpy
         run: pip install numpy
+      - name: install tensorflow
+        run: pip install tensorflow
       - name: training
         env:
           DB_USERNAME: github
