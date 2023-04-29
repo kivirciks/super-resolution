@@ -22,10 +22,20 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
-      - name: install Pillow
-        run: pip install Pillow
       - name: process_data
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python datasetpreprocessing.py
+        run: python predprocessing.ipynb
+
+  EDSR_Training:
+    runs-on: ubuntu-latest
+    needs: PreprocessDataset
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2
+      - name: training
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python EDSR.ipynb
