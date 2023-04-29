@@ -38,4 +38,4 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python АСИИ.ipynb
+        run: python edsr_train.py
