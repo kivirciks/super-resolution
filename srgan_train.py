@@ -200,7 +200,8 @@ train_ds = train.dataset(batch_size=16, random_transform=True)
 # Усреднение RGB каналов
 DIV2K_RGB_MEAN = np.array([0.4488, 0.4371, 0.4040]) * 255
 
-from tensorflow.python.keras.layers import Add, BatchNormalization, Conv2D, Dense, Flatten, Input, LeakyReLU, PReLU, Lambda
+from tensorflow.python.keras.layers import Add, Conv2D, Dense, Flatten, Input, LeakyReLU, PReLU, Lambda
+from tensorflow.keras.layers import BatchNormalization
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.applications.vgg19 import VGG19
 
@@ -261,9 +262,7 @@ def sr_resnet(num_filters=64, num_res_blocks=16):
 
     return Model(x_in, x)
 
-
 generator = sr_resnet
-
 
 def discriminator_block(x_in, num_filters, strides=1, batchnorm=True, momentum=0.8):
     x = Conv2D(num_filters, kernel_size=3, strides=strides, padding='same')(x_in)
