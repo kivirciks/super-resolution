@@ -43,6 +43,11 @@ jobs:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python edsr_train.py
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+         name: my-artifact
+         path: https://github.com/kivirciks/super-resolution/tree/main/weights/EDSR
 
   WDSR_Training:
     runs-on: ubuntu-latest
