@@ -275,4 +275,4 @@ import yadisk
 y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
 y.mkdir("/weights_dir") # Создать папку
 # Сохранение весов
-model_edsr.save_weights(y.upload(weights_dir, 'weights-edsr-16-x4.h5'))
+model_edsr.save_weights(y.upload('weights-edsr-16-x4.h5', '/weights_dir/weights-edsr-16-x4.h5'))
