@@ -271,5 +271,8 @@ optim_edsr = Adam(learning_rate=PiecewiseConstantDecay(boundaries=[200000], valu
 model_edsr.compile(optimizer=optim_edsr, loss='mean_absolute_error')
 model_edsr.fit(train_ds, epochs=3, steps_per_epoch=10)
 
+import yadisk
+y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
+y.mkdir("/weights_dir") # Создать папку
 # Сохранение весов
 model_edsr.save_weights(os.path.join(weights_dir, 'weights-edsr-16-x4.h5'))
