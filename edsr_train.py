@@ -258,8 +258,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.optimizers.schedules import PiecewiseConstantDecay
 
 # Создание директории для сохранения весов
-weights_dir = 'weights/EDSR'
-os.makedirs(weights_dir, exist_ok=True)
+# weights_dir = 'weights/EDSR'
+# os.makedirs(weights_dir, exist_ok=True)
 
 # EDSR baseline
 model_edsr = edsr(scale=4, num_res_blocks=16)
