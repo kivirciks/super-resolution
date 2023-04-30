@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: install kaggle API
         run: pip install kaggle
       - name: download dataset
@@ -21,7 +21,7 @@ jobs:
     needs: LoadDataset
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: process_data
         env:
           DB_USERNAME: github
@@ -33,7 +33,7 @@ jobs:
     needs: PreprocessDataset
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
@@ -54,7 +54,7 @@ jobs:
     needs: PreprocessDataset
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
@@ -72,7 +72,7 @@ jobs:
     needs: PreprocessDataset
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
