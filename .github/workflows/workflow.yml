@@ -38,6 +38,8 @@ jobs:
         run: pip install numpy
       - name: install tensorflow
         run: pip install tensorflow
+      - name: install yandex disk
+        run: pip install yadisk
       - name: training
         env:
           DB_USERNAME: github
