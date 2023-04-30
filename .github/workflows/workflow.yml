@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
          name: my-artifact
-         path: https://github.com/kivirciks/super-resolution/tree/main/weights/EDSR/
+         path: super-resolution/weights/EDSR/
 
   WDSR_Training:
     runs-on: ubuntu-latest
