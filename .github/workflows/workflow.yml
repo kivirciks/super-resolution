@@ -44,7 +44,7 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python edsr_train.py
+        run: python edsr_train2.py
 
   WDSR_Training:
     runs-on: ubuntu-latest
