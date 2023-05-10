@@ -282,8 +282,6 @@ model_edsr.fit(train_ds, epochs=300, steps_per_epoch=100)
 
 model_edsr.save_weights('edsr_weights.h5')
 
-!pip install yadisk
-
 import yadisk
 y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
 # Сохранение весов
