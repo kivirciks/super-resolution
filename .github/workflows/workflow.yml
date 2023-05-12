@@ -11,7 +11,7 @@ jobs:
       - name: download dataset
         env:
           KAGGLE_USERNAME: avstrokova
-          KAGGLE_KEY: 5e2c622209c9f22356e8e944eebba69c
+          KAGGLE_KEY: ${{secrets.KAGGLE_USERNAME}}
         run: kaggle datasets download avstrokova/div2-k-dataset-for-super-resolution
       - name: unpack dataset archive
         run: unzip div2-k-dataset-for-super-resolution.zip
