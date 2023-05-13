@@ -12,7 +12,8 @@ def download_bsd300(dest="./dataset"):
     output_image_dir = join(dest, "BSDS300/images")
 
     if not exists(output_image_dir):
-        url = "http://www2.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300-images.tgz"
+        url = "https://github.com/kivirciks/super-resolution/blob/main/Neural_Network/dataset/BSDS300-images.tgz"
+        #url = "http://www2.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300-images.tgz"
         print("downloading url ", url)
 
         data = urllib.request.urlopen(url)
