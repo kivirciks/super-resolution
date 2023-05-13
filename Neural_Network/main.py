@@ -12,7 +12,8 @@ from SRCNN.solver import SRCNNTrainer
 from SRGAN.solver import SRGANTrainer
 from SubPixelCNN.solver import SubPixelTrainer
 from VDSR.solver import VDSRTrainer
-from dataset.data import get_training_set, get_test_set
+#from dataset.data import get_training_set, get_test_set
+import dataset.div2k
 
 # ===========================================================
 # Training settings
@@ -37,10 +38,16 @@ def main():
     # Set train dataset & test dataset
     # ===========================================================
     print('===> Loading datasets')
-    train_set = get_training_set(args.upscale_factor)
-    test_set = get_test_set(args.upscale_factor)
-    training_data_loader = DataLoader(dataset=train_set, batch_size=args.batchSize, shuffle=True)
-    testing_data_loader = DataLoader(dataset=test_set, batch_size=args.testBatchSize, shuffle=False)
+    
+    #train_set = get_training_set(args.upscale_factor)
+    #test_set = get_test_set(args.upscale_factor)
+    #training_data_loader = DataLoader(dataset=train_set, batch_size=args.batchSize, shuffle=True)
+    #testing_data_loader = DataLoader(dataset=test_set, batch_size=args.testBatchSize, shuffle=False)
+    
+    train_set = DIV2K(scale=4, downgrade='bicubic', subset='train')
+    test_set = DIV2K(scale=4, downgrade='bicubic', subset='train')
+    training_data_loader = train.dataset(batch_size=16, random_transform=True)
+    testing_data_loader = train.dataset(batch_size=16, random_transform=True)
 
     if args.model == 'sub':
         model = SubPixelTrainer(args, training_data_loader, testing_data_loader)
