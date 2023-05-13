@@ -43,11 +43,6 @@ def main():
     #test_set = get_test_set(args.upscale_factor)
     #training_data_loader = DataLoader(dataset=train_set, batch_size=args.batchSize, shuffle=True)
     #testing_data_loader = DataLoader(dataset=test_set, batch_size=args.testBatchSize, shuffle=False)
-    
-    train_set = DIV2K(scale=4, downgrade='bicubic', subset='train')
-    #test_set = DIV2K(scale=4, downgrade='bicubic', subset='train')
-    training_data_loader = train.dataset(batch_size=16, random_transform=True)
-    #testing_data_loader = train.dataset(batch_size=16, random_transform=True)
 
     if args.model == 'sub':
         model = SubPixelTrainer(args, training_data_loader, testing_data_loader)
