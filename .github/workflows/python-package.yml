@@ -10,6 +10,8 @@ jobs:
         run: pip install numpy
       - name: install tensorflow
         run: pip install tensorflow
+      - name: install torchvision
+        run: pip install torchvision
       - name: training
         env:
           DB_USERNAME: github
