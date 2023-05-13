@@ -195,6 +195,6 @@ def download_archive(file, target_dir, extract=True):
 
 # Непосредственно получение датасета
 train_set = DIV2K(scale=4, downgrade='bicubic', subset='train')
-training_data_loader = train.dataset(batch_size=16, random_transform=True)
+training_data_loader = train_set.dataset(batch_size=16, random_transform=True)
 test_set = train_set
 testing_data_loader = training_data_loader
