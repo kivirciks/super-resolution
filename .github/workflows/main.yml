@@ -1,0 +1,17 @@
+name: Test-test
+on: [workflow_dispatch]
+jobs:
+  EDSR_Training:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install numpy
+        run: pip install numpy
+      - name: install torchvision
+        run: pip install torchvision
+      - name: training
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python test.py
