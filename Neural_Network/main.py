@@ -1,7 +1,9 @@
 from __future__ import print_function
-
+from math import log10
+import torch
+import torch.backends.cudnn as cudnn
 import argparse
-
+import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from DBPN.solver import DBPNTrainer
@@ -32,8 +34,6 @@ parser.add_argument('--model', '-m', type=str, default='srgan', help='choose whi
 
 args = parser.parse_args()
 
-import torch
-import torch.nn as nn
 class Net(torch.nn.Module):
     def __init__(self, num_channels, base_filter, upscale_factor=2):
         super(Net, self).__init__()
@@ -60,10 +60,6 @@ def normal_init(m, mean, std):
         m.weight.data.normal_(mean, std)
         m.bias.data.zero_()
         
-from __future__ import print_function
-from math import log10
-import torch
-import torch.backends.cudnn as cudnn
 class SRCNNTrainer(object):
     def __init__(self, config, training_loader, testing_loader):
         super(SRCNNTrainer, self).__init__()
