@@ -147,8 +147,8 @@ def main():
 
     if args.model == 'sub':
         model = SubPixelTrainer(args, training_data_loader, testing_data_loader)
-    elif args.model == 'srcnn':
-        model = SRCNNTrainer(args, training_data_loader, testing_data_loader)
+#    elif args.model == 'srcnn':
+#        model = SRCNNTrainer(args, training_data_loader, testing_data_loader)
     elif args.model == 'vdsr':
         model = VDSRTrainer(args, training_data_loader, testing_data_loader)
     elif args.model == 'edsr':
@@ -162,7 +162,9 @@ def main():
     elif args.model == 'dbpn':
         model = DBPNTrainer(args, training_data_loader, testing_data_loader)
     else:
-        raise Exception("the model does not exist")
+        model = SRCNNTrainer(args, training_data_loader, testing_data_loader)        
+#    else:
+#        raise Exception("the model does not exist")
 
     model.run()
 
