@@ -16,5 +16,5 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        #run: python Neural_Network/main.py -m [srcnn]
-        run: python3 Neural_Network/main.py -m [sub/srcnn/cdsr/edsr/fsrcnn/drcn/srgan/dbpn]
+        run: python Neural_Network/main.py -m srcnn
+        #run: python3 Neural_Network/main.py -m [sub/srcnn/cdsr/edsr/fsrcnn/drcn/srgan/dbpn]
