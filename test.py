@@ -1,3 +1,4 @@
+from __future__ import print_function
 from os import listdir, remove
 from os.path import join, exists, basename
 import torch
@@ -6,22 +7,21 @@ import torch.utils.data as data
 from torchvision.transforms import Compose, CenterCrop, ToTensor, Resize
 import torch.nn as nn
 from PIL import Image
-from __future__ import print_function
 import tarfile
 from six.moves import urllib
 from math import log10
 import argparse
 from torch.utils.data import DataLoader
+import sys
+import time
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
-
 
 def load_img(filepath):
     img = Image.open(filepath).convert('YCbCr')
     y, _, _ = img.split()
     return y
-
 
 class DatasetFromFolder(data.Dataset):
     def __init__(self, image_dir, input_transform=None, target_transform=None):
@@ -66,10 +66,8 @@ def download_bsd300(dest="./dataset"):
 
     return output_image_dir
 
-
 def calculate_valid_crop_size(crop_size, upscale_factor):
     return crop_size - (crop_size % upscale_factor)
-
 
 def input_transform(crop_size, upscale_factor):
     return Compose([
@@ -78,13 +76,11 @@ def input_transform(crop_size, upscale_factor):
         ToTensor(),
     ])
 
-
 def target_transform(crop_size):
     return Compose([
         CenterCrop(crop_size),
         ToTensor(),
     ])
-
 
 def get_training_set(upscale_factor):
     root_dir = download_bsd300()
@@ -95,7 +91,6 @@ def get_training_set(upscale_factor):
                              input_transform=input_transform(crop_size, upscale_factor),
                              target_transform=target_transform(crop_size))
 
-
 def get_test_set(upscale_factor):
     root_dir = download_bsd300()
     test_dir = join(root_dir, "test")
@@ -105,15 +100,9 @@ def get_test_set(upscale_factor):
                              input_transform=input_transform(crop_size, upscale_factor),
                              target_transform=target_transform(crop_size))
 
-  
-  
-import sys
-import time
-
 TOTAL_BAR_LENGTH = 80
 LAST_T = time.time()
 BEGIN_T = LAST_T
-
 
 def progress_bar(current, total, msg=None):
     global LAST_T, BEGIN_T
@@ -151,7 +140,6 @@ def progress_bar(current, total, msg=None):
         sys.stdout.write('\n')
     sys.stdout.flush()
 
-
 # return the formatted time
 def format_time(seconds):
     days = int(seconds / 3600/24)
@@ -185,8 +173,6 @@ def format_time(seconds):
         output = '0ms'
     return output
 
-
-
 class Net(torch.nn.Module):
     def __init__(self, num_channels, base_filter, upscale_factor=2):
         super(Net, self).__init__()
@@ -207,7 +193,6 @@ class Net(torch.nn.Module):
     def weight_init(self, mean, std):
         for m in self._modules:
             normal_init(self._modules[m], mean, std)
-
 
 def normal_init(m, mean, std):
     if isinstance(m, nn.ConvTranspose2d) or isinstance(m, nn.Conv2d):
@@ -287,8 +272,7 @@ class SRCNNTrainer(object):
             self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save_model()
-                
-               
+                               
 # ===========================================================
 # Training settings
 # ===========================================================
@@ -305,7 +289,6 @@ parser.add_argument('--upscale_factor', '-uf',  type=int, default=4, help="super
 parser.add_argument('--model', '-m', type=str, default='srgan', help='choose which model is going to use')
 
 args = parser.parse_args()
-
 
 def main():
     # ===========================================================
