@@ -5,10 +5,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.6"]
+        python-version: ["3.6"]    
+  
     steps:
-      - name: checkout repo content
-        uses: actions/checkout@v3
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v4
+        with:
+          # Semantic version range syntax or exact version of a Python version
+          python-version: '3.6'
+          # Optional - x64 or x86 architecture, defaults to x64
+          architecture: 'x64'
+      # You can test your matrix by printing the current Python version
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+        
+      #- name: checkout repo content
+      #  uses: actions/checkout@v3
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
