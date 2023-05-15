@@ -3,6 +3,9 @@ on: [workflow_dispatch]
 jobs:
   RRDN_Training:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.6"]
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
