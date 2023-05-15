@@ -2,22 +2,18 @@ name: Test
 on: [workflow_dispatch]
 jobs:
   RRDN_Training:
-    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        python-version: ["3.6"]    
+    runs-on: ubuntu
+    strategy:
+      matrix:
+        python-version: ["3.6"]
   
     steps:
-#      - name: Set up Python 3.6.15
-#        uses: actions/setup-python@v4
-#        with:
-#          # Semantic version range syntax or exact version of a Python version
-#          python-version: '3.6.15'
-#          # Optional - x64 or x86 architecture, defaults to x64
-#          architecture: 'x64'
-#      # You can test your matrix by printing the current Python version
-#      - name: Display Python version
-#        run: python -c "import sys; print(sys.version)"
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6' 
+      - run: python my_script.py
+
         
       - name: checkout repo content
         uses: actions/checkout@v3
