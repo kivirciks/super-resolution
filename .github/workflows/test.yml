@@ -2,7 +2,7 @@ name: Test
 on: [workflow_dispatch]
 jobs:
   RRDN_Training:
-    runs-on: ubunty-latest
+    runs-on: ubuntu-latest
 #    strategy:
 #      matrix:
 #        python-version: ["3.6"]    
