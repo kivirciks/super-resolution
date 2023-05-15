@@ -26,7 +26,9 @@ jobs:
         run: pip install tqdm
       - name: install imageio
         run: pip install imageio
-
+      - name: install pyyaml
+        run: pip install pyyaml
+        
       - name: training
         env:
           DB_USERNAME: github
