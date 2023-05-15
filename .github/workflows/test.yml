@@ -12,6 +12,8 @@ jobs:
         run: pip install tensorflow
       - name: install wget
         run: pip install wget     
+      - name: install tqdm
+        run: pip install tqdm
         
       - name: training
         env:
