@@ -2,7 +2,7 @@ name: Test
 on: [workflow_dispatch]
 jobs:
   RRDN_Training:
-    runs-on: гubunty-latest
+    runs-on: ubunty-latest
 #    strategy:
 #      matrix:
 #        python-version: ["3.6"]    
@@ -19,8 +19,8 @@ jobs:
 #      - name: Display Python version
 #        run: python -c "import sys; print(sys.version)"
         
-      #- name: checkout repo content
-      #  uses: actions/checkout@v3
+      - name: checkout repo content
+        uses: actions/checkout@v3
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
