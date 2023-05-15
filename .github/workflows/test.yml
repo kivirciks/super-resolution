@@ -11,9 +11,7 @@ jobs:
       - name: install tensorflow
         run: pip install tensorflow
       - name: install wget
-        run: pip install wget
-      - name: install zipfile
-        run: pip install zipfile       
+        run: pip install wget     
         
       - name: training
         env:
