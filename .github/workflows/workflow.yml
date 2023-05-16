@@ -47,7 +47,7 @@ jobs:
         run: python EDSR_train.py
 
   WDSR_Training:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: ["3.6"]
@@ -56,7 +56,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.6' 
+          python-version: '3.6'        
+      - name: checkout repo content
+        uses: actions/checkout@v3
+        
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
@@ -70,19 +73,19 @@ jobs:
         run: python wdsr_train.py
         
   RRDN_Training:
-    needs: PreprocessDataset
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.6"]  
+        python-version: ["3.6"]
+    needs: PreprocessDataset
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.6' 
-        
+          python-version: '3.6'        
       - name: checkout repo content
         uses: actions/checkout@v3
+        
       - name: install numpy
         run: pip install numpy
       - name: install tensorflow
