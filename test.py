@@ -1850,8 +1850,8 @@ trainer = Trainer(
 )
 
 trainer.train(
-    epochs=8,
-    steps_per_epoch=50,
+    epochs=4,
+    steps_per_epoch=20,
     batch_size=16,
     monitored_metrics={'val_PSNR_Y': 'max'}
 )
