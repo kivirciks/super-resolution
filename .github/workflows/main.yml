@@ -20,8 +20,6 @@ jobs:
         run: pip install numpy
       - name: install torchvision
         run: pip install torchvision   
-      - name: install tarfile
-        run: pip install tarfile
 
         
       - name: training
