@@ -1642,3 +1642,11 @@ trainer.train(
     batch_size=16,
     monitored_metrics={'val_PSNR_Y': 'max'}
 )
+
+
+rrdn.save_weights('rrdn_weights.h5')
+
+import yadisk
+y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
+# Сохранение весов
+rrdn.save_weights(y.upload('rrdn_weights.h5', '/weights_dir/rrdn_weights.h5'))
