@@ -18,100 +18,26 @@ from os.path import join
 from PIL import Image
 
 
-def is_image_file(filename):
-    return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_LR_bicubic_X2.zip')
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_LR_bicubic_X2.zip')
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_HR.zip')
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_HR.zip')
 
+archive_train_LR = 'DIV2K_train_LR_bicubic_X2.zip'
+with zipfile.ZipFile(archive_train_LR, 'r') as zip_file:
+    zip_file.extractall()
 
-def load_img(filepath):
-    img = Image.open(filepath).convert('YCbCr')
-    y, _, _ = img.split()
-    return y
+archive_valid_LR = 'DIV2K_valid_LR_bicubic_X2.zip'
+with zipfile.ZipFile(archive_valid_LR, 'r') as zip_file:
+    zip_file.extractall()
+    
+archive_train_HR = 'DIV2K_train_HR.zip'
+with zipfile.ZipFile(archive_train_HR, 'r') as zip_file:
+    zip_file.extractall()
 
-
-class DatasetFromFolder(data.Dataset):
-    def __init__(self, image_dir, input_transform=None, target_transform=None):
-        super(DatasetFromFolder, self).__init__()
-        self.image_filenames = [join(image_dir, x) for x in listdir(image_dir) if is_image_file(x)]
-
-        self.input_transform = input_transform
-        self.target_transform = target_transform
-
-    def __getitem__(self, index):
-        input_image = load_img(self.image_filenames[index])
-        target = input_image.copy()
-        if self.input_transform:
-            input_image = self.input_transform(input_image)
-        if self.target_transform:
-            target = self.target_transform(target)
-
-        return input_image, target
-
-    def __len__(self):
-        return len(self.image_filenames)
-        
-       
-
-def download_bsd300(dest="./dataset"):
-    output_image_dir = join(dest, "BSDS300/images")
-
-    if not exists(output_image_dir):
-        url = "http://www2.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300-images.tgz"
-        print("downloading url ", url)
-
-        data = urllib.request.urlopen(url)
-
-        file_path = join(dest, basename(url))
-        with open(file_path, 'wb') as f:
-            f.write(data.read())
-
-        print("Extracting data")
-        with tarfile.open(file_path) as tar:
-            for item in tar:
-                tar.extract(item, dest)
-
-        remove(file_path)
-
-    return output_image_dir
-
-
-def calculate_valid_crop_size(crop_size, upscale_factor):
-    return crop_size - (crop_size % upscale_factor)
-
-
-def input_transform(crop_size, upscale_factor):
-    return Compose([
-        CenterCrop(crop_size),
-        Resize(crop_size // upscale_factor),
-        ToTensor(),
-    ])
-
-
-def target_transform(crop_size):
-    return Compose([
-        CenterCrop(crop_size),
-        ToTensor(),
-    ])
-
-
-def get_training_set(upscale_factor):
-    root_dir = download_bsd300()
-    train_dir = join(root_dir, "train")
-    crop_size = calculate_valid_crop_size(256, upscale_factor)
-
-    return DatasetFromFolder(train_dir,
-                             input_transform=input_transform(crop_size, upscale_factor),
-                             target_transform=target_transform(crop_size))
-
-
-def get_test_set(upscale_factor):
-    root_dir = download_bsd300()
-    test_dir = join(root_dir, "test")
-    crop_size = calculate_valid_crop_size(256, upscale_factor)
-
-    return DatasetFromFolder(test_dir,
-                             input_transform=input_transform(crop_size, upscale_factor),
-                             target_transform=target_transform(crop_size))
-
+archive_valid_HR = 'DIV2K_valid_HR.zip'
+with zipfile.ZipFile(archive_valid_HR, 'r') as zip_file:
+    zip_file.extractall()
 
 TOTAL_BAR_LENGTH = 80
 LAST_T = time.time()
@@ -308,17 +234,16 @@ parser.add_argument('--model', '-m', type=str, default='srgan', help='choose whi
 
 args = parser.parse_args()
 
-def main():
-    # ===========================================================
-    # Set train dataset & test dataset
-    # ===========================================================
-    print('===> Loading datasets')
-    train_set = get_training_set(args.upscale_factor)
-    test_set = get_test_set(args.upscale_factor)
-    training_data_loader = DataLoader(dataset=train_set, batch_size=args.batchSize, shuffle=True)
-    testing_data_loader = DataLoader(dataset=test_set, batch_size=args.testBatchSize, shuffle=False)
-    model = SRCNNTrainer(args, training_data_loader, testing_data_loader)
-    model.run()
-
+# ===========================================================
+# Set train dataset & test dataset
+# ===========================================================
+print('===> Loading datasets')
+train_set = 'DIV2K_train_HR.zip'
+test_set = 'DIV2K_valid_HR.zip'
+training_data_loader = 'DIV2K_train_LR_bicubic_X2.zip'
+testing_data_loader = 'DIV2K_valid_LR_bicubic_X2.zip'
+model = SRCNNTrainer(args, training_data_loader, testing_data_loader)
+model.run()    
+    
 if __name__ == '__main__':
     main()
