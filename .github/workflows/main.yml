@@ -1,17 +1,31 @@
-name: Test-test
+name: Test-Test_SRCNN
 on: [workflow_dispatch]
 jobs:
-  EDSR_Training:
-    runs-on: ubuntu-latest
+  RRDN_Training:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ["3.6"]
+  
     steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6' 
+
+        
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: install numpy
         run: pip install numpy
       - name: install torchvision
-        run: pip install torchvision
+        run: pip install torchvision   
+      - name: install tarfile
+        run: pip install tarfile
+
+        
       - name: training
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python test.py
+        run: python srcnn.py
