@@ -2,6 +2,17 @@ import logging
 import os
 import zipfile
 import wget
+from time import time
+import yaml
+from pathlib import Path
+import numpy as np
+from tqdm import tqdm
+import imageio
+import argparse
+from datetime import datetime
+import yaml
+
+# нейросетевые библиотеки Keras
 import tensorflow as tf
 from tensorflow.keras.initializers import RandomUniform
 from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda
@@ -10,57 +21,39 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import backend as K
 import tensorflow.keras.backend as K
-from time import time
-import yaml
-from pathlib import Path
-import numpy as np
-from tqdm import tqdm
 
+# Логгирование
 def get_logger(name, job_dir='.'):
-    """ Returns logger that prints on stdout at INFO level and on file at DEBUG level. """
-    
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     if not logger.handlers:
-        # stream handler ensures that logging events are passed to stdout
+        # обработчик потока передает события регистрации на stdout
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         ch_formatter = logging.Formatter('%(message)s')
         ch.setFormatter(ch_formatter)
         logger.addHandler(ch)
         
-        # file handler ensures that logging events are passed to log file
+        # обработчик потока проверяет, что события записались в файл
         if not os.path.exists(job_dir):
-            os.makedirs(job_dir)
-        
+            os.makedirs(job_dir)        
         fh = logging.FileHandler(filename=os.path.join(job_dir, 'log_file'))
         fh.setLevel(logging.DEBUG)
         fh_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(fh_formatter)
-        logger.addHandler(fh)
-    
+        logger.addHandler(fh)    
     return logger
 
-import os
-import imageio
-import numpy as np
-
+# DataHandler генерирует расширенные пакеты, используемые для обучения или проверки.
+# lr_dir - директория с изображениями низкого разрешения
+# hr_dir - директория с изображениями высокого разрешения
+# patch_size - integer, размер патчей, извлеченных из изображений низкого разрешения
+# scale - integet, повышающий коэффициент
+# n_validation_samples - integer, размер тестового набора
 class DataHandler:
-    """
-    DataHandler generate augmented batches used for training or validation.
-
-    Args:
-        lr_dir: directory containing the Low Res images.
-        hr_dir: directory containing the High Res images.
-        patch_size: integer, size of the patches extracted from LR images.
-        scale: integer, upscaling factor.
-        n_validation_samples: integer, size of the validation set. Only provided if the
-            DataHandler is used to generate validation sets.
-    """
-    
     def __init__(self, lr_dir, hr_dir, patch_size, scale, n_validation_samples=None):
-        self.folders = {'hr': hr_dir, 'lr': lr_dir}  # image folders
-        self.extensions = ('.png', '.jpeg', '.jpg')  # admissible extension
+        self.folders = {'hr': hr_dir, 'lr': lr_dir}  # директории хранения изображений
+        self.extensions = ('.png', '.jpeg', '.jpg')  # допустимые расширения изображений
         self.img_list = {}  # list of file names
         self.n_validation_samples = n_validation_samples
         self.patch_size = patch_size
@@ -70,80 +63,66 @@ class DataHandler:
         self._make_img_list()
         self._check_dataset()
     
-    def _make_img_list(self):
-        """ Creates a dictionary of lists of the acceptable images contained in lr_dir and hr_dir. """
-        
+    # Создает словарь списков допустимых изображений, содержащихся в lr_dir и hr_dir 
+    def _make_img_list(self):       
         for res in ['hr', 'lr']:
             file_names = os.listdir(self.folders[res])
             file_names = [file for file in file_names if file.endswith(self.extensions)]
-            self.img_list[res] = np.sort(file_names)
-        
+            self.img_list[res] = np.sort(file_names)        
         if self.n_validation_samples:
             samples = np.random.choice(
-                range(len(self.img_list['hr'])), self.n_validation_samples, replace=False
-            )
+                range(len(self.img_list['hr'])), self.n_validation_samples, replace=False)
             for res in ['hr', 'lr']:
                 self.img_list[res] = self.img_list[res][samples]
     
+    # Проверка работоспособности для набора данных
     def _check_dataset(self):
-        """ Sanity check for dataset. """
-        
-        # the order of these asserts is important for testing
+        # порядок этих утверждений важен для тестирования
         assert len(self.img_list['hr']) == self.img_list['hr'].shape[0], 'UnevenDatasets'
         assert self._matching_datasets(), 'Input/LabelsMismatch'
     
+    # Сопоставление имени файлов для LR и HR
     def _matching_datasets(self):
-        """ Rough file name matching between lr and hr directories. """
         # LR_name.png = HR_name+x+scale.png
-        # or
+        # или
         # LR_name.png = HR_name.png
         LR_name_root = [x.split('.')[0].rsplit('x', 1)[0] for x in self.img_list['lr']]
         HR_name_root = [x.split('.')[0] for x in self.img_list['hr']]
         return np.all(HR_name_root == LR_name_root)
     
-    def _not_flat(self, patch, flatness):
-        """
-        Determines whether the patch is complex, or not-flat enough.
-        Threshold set by flatness.
-        """
-        
+    # Определяет, является ли патч сложным или недостаточно ровным
+    def _not_flat(self, patch, flatness):        
         if max(np.std(patch, axis=0).mean(), np.std(patch, axis=1).mean()) < flatness:
             return False
         else:
-            return True
+            return True     
     
-    def _crop_imgs(self, imgs, batch_size, flatness):
-        """
-        Get random top left corners coordinates in LR space, multiply by scale to
-        get HR coordinates.
-        Gets batch_size + n possible coordinates.
-        Accepts the batch only if the standard deviation of pixel intensities is above a given threshold, OR
-        no patches can be further discarded (n have been discarded already).
-        Square crops of size patch_size are taken from the selected
-        top left corners.
-        """
-        
+    # Обрезка изображений. Возвращает пакет для каждого изображения в наборе проверки
+    def _crop_imgs(self, imgs, batch_size, flatness):  
         slices = {}
         crops = {}
         crops['lr'] = []
         crops['hr'] = []
         accepted_slices = {}
         accepted_slices['lr'] = []
+        # Получение случайных координаты верхних левых углов в пространстве LR
         top_left = {'x': {}, 'y': {}}
+        # Умножение на масштаб, чтобы получить кадровые координаты
         n = 50 * batch_size
+        
+        # Получает batch_size + n возможных координат
         for i, axis in enumerate(['x', 'y']):
             top_left[axis]['lr'] = np.random.randint(
-                0, imgs['lr'].shape[i] - self.patch_size['lr'] + 1, batch_size + n
-            )
+                0, imgs['lr'].shape[i] - self.patch_size['lr'] + 1, batch_size + n)
             top_left[axis]['hr'] = top_left[axis]['lr'] * self.scale
+            
         for res in ['lr', 'hr']:
             slices[res] = np.array(
                 [
                     {'x': (x, x + self.patch_size[res]), 'y': (y, y + self.patch_size[res])}
                     for x, y in zip(top_left['x'][res], top_left['y'][res])
-                ]
-            )
-        
+                ])
+            
         for slice_index, s in enumerate(slices['lr']):
             candidate_crop = imgs['lr'][s['x'][0]: s['x'][1], s['y'][0]: s['y'][1], slice(None)]
             if self._not_flat(candidate_crop, flatness) or n == 0:
@@ -153,9 +132,10 @@ class DataHandler:
                 n -= 1
             if len(crops['lr']) == batch_size:
                 break
-        
+        # Принимает пакет только в том случае, если стандартное отклонение интенсивности пикселей выше заданного порога 
+        # ИЛИ никакие патчи не могут быть дополнительно отброшены (уже отброшено n)      
         accepted_slices['hr'] = slices['hr'][accepted_slices['lr']]
-        
+        # Квадратные кадры размером patch_size берутся из выделенных верхних левых углов 
         for s in accepted_slices['hr']:
             candidate_crop = imgs['hr'][s['x'][0]: s['x'][1], s['y'][0]: s['y'][1], slice(None)]
             crops['hr'].append(candidate_crop)
@@ -164,48 +144,35 @@ class DataHandler:
         crops['hr'] = np.array(crops['hr'])
         return crops
     
-    def _apply_transform(self, img, transform_selection):
-        """ Rotates and flips input image according to transform_selection. """
-        
+    # Поворачивает и переворачивает входное изображение в соответствии с transform_selection
+    def _apply_transform(self, img, transform_selection):       
         rotate = {
             0: lambda x: x,
-            1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # rotate right
-            2: lambda x: np.rot90(x, k=1, axes=(0, 1)),  # rotate left
-        }
-        
+            1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # вращение вправо
+            2: lambda x: np.rot90(x, k=1, axes=(0, 1)),  # вращение влево
+        }        
         flip = {
             0: lambda x: x,
-            1: lambda x: np.flip(x, 0),  # flip along horizontal axis
-            2: lambda x: np.flip(x, 1),  # flip along vertical axis
-        }
-        
+            1: lambda x: np.flip(x, 0),  # отражение по горизонтальной оси
+            2: lambda x: np.flip(x, 1),  # отражение по вертикальной оси
+        }        
         rot_direction = transform_selection[0]
-        flip_axis = transform_selection[1]
-        
+        flip_axis = transform_selection[1]        
         img = rotate[rot_direction](img)
-        img = flip[flip_axis](img)
-        
+        img = flip[flip_axis](img)        
         return img
     
-    def _transform_batch(self, batch, transforms):
-        """ Transforms each individual image of the batch independently. """
-        
+    # Преобразует каждое отдельное изображение в пакете независимо
+    def _transform_batch(self, batch, transforms):        
         t_batch = np.array(
-            [self._apply_transform(img, transforms[i]) for i, img in enumerate(batch)]
-        )
+            [self._apply_transform(img, transforms[i]) for i, img in enumerate(batch)])
         return t_batch
-    
-    def get_batch(self, batch_size, idx=None, flatness=0.0):
-        """
-        Returns a dictionary with keys ('lr', 'hr') containing training batches
-        of Low Res and High Res image patches.
-
-        Args:
-            batch_size: integer.
-            flatness: float in [0,1], is the patch "flatness" threshold.
-                Determines what level of detail the patches need to meet. 0 means any patch is accepted.
-        """
-        
+   
+    # Возвращает словарь с ключами ('lr', 'hr'), содержащими обучающие пакеты патчей изображений низкого и высокого разрешения
+    # batch_size - integer
+    # flatness - float [0,1] - jпределяет уровень детализации, которому должны соответствовать патчи
+    # 0 означает, что принимается любой патч
+    def get_batch(self, batch_size, idx=None, flatness=0.0):        
         if not idx:
             # randomly select one image. idx is given at validation time.
             idx = np.random.choice(range(len(self.img_list['hr'])))
@@ -216,13 +183,11 @@ class DataHandler:
         batch = self._crop_imgs(img, batch_size, flatness)
         transforms = np.random.randint(0, 3, (batch_size, 2))
         batch['lr'] = self._transform_batch(batch['lr'], transforms)
-        batch['hr'] = self._transform_batch(batch['hr'], transforms)
-        
+        batch['hr'] = self._transform_batch(batch['hr'], transforms)       
         return batch
     
+    # Возвращает пакет для каждого изображения в наборе для тестирования
     def get_validation_batches(self, batch_size):
-        """ Returns a batch for each image in the validation set. """
-        
         if self.n_validation_samples:
             batches = []
             for idx in range(self.n_validation_samples):
@@ -236,12 +201,9 @@ class DataHandler:
                 'No validation set size specified. (not operating in a validation set?)'
             )
     
+    # Возвращает пакет для каждого изображения в проверочном наборе
+    # Подготовка к передаче в модуль оценки
     def get_validation_set(self, batch_size):
-        """
-        Returns a batch for each image in the validation set.
-        Flattens and splits them to feed it to Keras's model.evaluate.
-        """
-        
         if self.n_validation_samples:
             batches = self.get_validation_batches(batch_size)
             valid_set = {'lr': [], 'hr': []}
@@ -258,80 +220,55 @@ class DataHandler:
             raise ValueError(
                 'No validation set size specified. (not operating in a validation set?)'
             )
-            
-import numpy as np
-
-
+# Преобразование трехмерного массива в масштабированный четырехмерный пакет размера 1            
 def process_array(image_array, expand=True):
-    """ Process a 3-dimensional array into a scaled, 4 dimensional batch of size 1. """
-    
     image_batch = image_array / 255.0
     if expand:
         image_batch = np.expand_dims(image_batch, axis=0)
     return image_batch
 
-
-def process_output(output_tensor):
-    """ Transforms the 4-dimensional output tensor into a suitable image format. """
-    
+# Преобразует 4-мерный выходной тензор в подходящий формат изображения
+def process_output(output_tensor):    
     sr_img = output_tensor.clip(0, 1) * 255
     sr_img = np.uint8(sr_img)
     return sr_img
 
-
+# Заполняет изображение патчем со значениями края отступа
 def pad_patch(image_patch, padding_size, channel_last=True):
-    """ Pads image_patch with with padding_size edge values. """
-    
     if channel_last:
         return np.pad(
             image_patch,
             ((padding_size, padding_size), (padding_size, padding_size), (0, 0)),
-            'edge',
-        )
+            'edge',)
     else:
         return np.pad(
             image_patch,
             ((0, 0), (padding_size, padding_size), (padding_size, padding_size)),
-            'edge',
-        )
-
-
+            'edge',)
 def unpad_patches(image_patches, padding_size):
     return image_patches[:, padding_size:-padding_size, padding_size:-padding_size, :]
 
-
+# Разбивает изображение на частично перекрывающиеся участки
+# Патчи перекрываются на padding_size пикселей
+# Заполняется изображение дважды:
+# - сначала заполняется до размера, кратного размеру патча
+# - затем идет работа с отступами на границах
 def split_image_into_overlapping_patches(image_array, patch_size, padding_size=2):
-    """ Splits the image into partially overlapping patches.
-
-    The patches overlap by padding_size pixels.
-
-    Pads the image twice:
-        - first to have a size multiple of the patch size,
-        - then to have equal padding at the borders.
-
-    Args:
-        image_array: numpy array of the input image.
-        patch_size: size of the patches from the original image (without padding).
-        padding_size: size of the overlapping area.
-    """
-    
+    # image_array - numpy массив входного изображения
+    # patch_size - размер патчей из исходного изображения (без отступов)
+    # padding_size - размер области перекрытия
     xmax, ymax, _ = image_array.shape
     x_remainder = xmax % patch_size
     y_remainder = ymax % patch_size
-    
-    # modulo here is to avoid extending of patch_size instead of 0
+    # берется по модулю, чтобы избжать расширения patch_size вместо 0
     x_extend = (patch_size - x_remainder) % patch_size
-    y_extend = (patch_size - y_remainder) % patch_size
-    
-    # make sure the image is divisible into regular patches
+    y_extend = (patch_size - y_remainder) % patch_size 
+    # утверждение, что образ делится на обычные патчи
     extended_image = np.pad(image_array, ((0, x_extend), (0, y_extend), (0, 0)), 'edge')
-    
-    # add padding around the image to simplify computations
-    padded_image = pad_patch(extended_image, padding_size, channel_last=True)
-    
+    # добавление отступов вокруг изображения для упрощения вычислений
+    padded_image = pad_patch(extended_image, padding_size, channel_last=True)    
     xmax, ymax, _ = padded_image.shape
     patches = []
-    
     x_lefts = range(padding_size, xmax - padding_size, patch_size)
     y_tops = range(padding_size, ymax - padding_size, patch_size)
     
@@ -342,30 +279,21 @@ def split_image_into_overlapping_patches(image_array, patch_size, padding_size=2
             x_right = x + patch_size + padding_size
             y_bottom = y + patch_size + padding_size
             patch = padded_image[x_left:x_right, y_top:y_bottom, :]
-            patches.append(patch)
-    
+            patches.append(patch)    
     return np.array(patches), padded_image.shape
 
-
+# восстановление изображения из перекрывающихся участков
+# после масштабирования размера и отступы также должны быть масштабированы
 def stich_together(patches, padded_image_shape, target_shape, padding_size=4):
-    """ Reconstruct the image from overlapping patches.
-
-    After scaling, shapes and padding should be scaled too.
-
-    Args:
-        patches: patches obtained with split_image_into_overlapping_patches
-        padded_image_shape: shape of the padded image contructed in split_image_into_overlapping_patches
-        target_shape: shape of the final image
-        padding_size: size of the overlapping area.
-    """
-    
+    # patches - патчи, полученные с помощью split_image_into_overlapping_patches
+    # padded_image_shape - размер дополненного изображения, созданного в split_image_into_overlapping_patches
+    # target_shape - размер конечного изображения
+    # padding_size - размер области перекрытия
     xmax, ymax, _ = padded_image_shape
     patches = unpad_patches(patches, padding_size)
     patch_size = patches.shape[1]
-    n_patches_per_row = ymax // patch_size
-    
-    complete_image = np.zeros((xmax, ymax, 3))
-    
+    n_patches_per_row = ymax // patch_size    
+    complete_image = np.zeros((xmax, ymax, 3))    
     row = -1
     col = 0
     for i in range(len(patches)):
@@ -378,55 +306,29 @@ def stich_together(patches, padded_image_shape, target_shape, padding_size=4):
         col += 1
     return complete_image[0: target_shape[0], 0: target_shape[1], :]
 
+# Оценка значения PSNR: PSNR = 20 * log10(MAXp) - 10 * log10(MSE)
 def PSNR(y_true, y_pred, MAXp=1):
-    """
-    Evaluates the PSNR value:
-        PSNR = 20 * log10(MAXp) - 10 * log10(MSE).
-
-    Args:
-        y_true: ground truth.
-        y_pred: predicted value.
-        MAXp: maximum value of the pixel range (default=1).
-    """
+    # y_true - реальное значение
+    # y_pred - предсказываемое значение
+    # MAXp - максимальное значение диапазона пикселей (по умолчанию=1).
     return -10.0 * K.log(K.mean(K.square(y_pred - y_true))) / K.log(10.0)
 
-
-def RGB_to_Y(image):
-    """ Image has values from 0 to 1. """
-    
+# Изображение имеет значения от 0 до 1
+def RGB_to_Y(image):    
     R = image[:, :, :, 0]
     G = image[:, :, :, 1]
-    B = image[:, :, :, 2]
-    
+    B = image[:, :, :, 2]    
     Y = 16 + (65.738 * R) + 129.057 * G + 25.064 * B
     return Y / 255.0
 
-
+# Оценивает значение PSNR на канале Y: PSNR = 20 * log10(MAXp) - 10 * log10(MSE)
 def PSNR_Y(y_true, y_pred, MAXp=1):
-    """
-    Evaluates the PSNR value on the Y channel:
-        PSNR = 20 * log10(MAXp) - 10 * log10(MSE).
-
-    Args:
-        y_true: ground truth.
-        y_pred: predicted value.
-        MAXp: maximum value of the pixel range (default=1).
-    """
     y_true = RGB_to_Y(y_true)
     y_pred = RGB_to_Y(y_pred)
     return -10.0 * K.log(K.mean(K.square(y_pred - y_true))) / K.log(10.0)
-
-
-import os
-import argparse
-from datetime import datetime
-
-import numpy as np
-import yaml
-
 logger = get_logger(__name__)
 
-
+# Задание аргументов
 def _get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--prediction', action='store_true', dest='prediction')
@@ -436,10 +338,8 @@ def _get_parser():
     parser.add_argument('--config', action='store', dest='config_file')
     return parser
 
-
+# Parse CLI arguments - анализ аргументов командной строки
 def parse_args():
-    """ Parse CLI arguments. """
-    
     parser = _get_parser()
     args = vars(parser.parse_args())
     if args['prediction'] and args['training']:
@@ -447,14 +347,12 @@ def parse_args():
         raise ValueError('Select only prediction OR training.')
     return args
 
-
 def get_timestamp():
     ts = datetime.now()
     time_stamp = '{y}-{m:02d}-{d:02d}_{h:02d}{mm:02d}'.format(
         y=ts.year, m=ts.month, d=ts.day, h=ts.hour, mm=ts.minute
     )
     return time_stamp
-
 
 def check_parameter_keys(parameter, needed_keys, optional_keys=None, default_value=None):
     if needed_keys:
@@ -468,13 +366,9 @@ def check_parameter_keys(parameter, needed_keys, optional_keys=None, default_val
                 logger.info('Setting {k} in {p} to {d}'.format(k=key, p=parameter, d=default_value))
                 parameter[key] = default_value
 
-
-def get_config_from_weights(w_path, arch_params, name):
-    """
-    Extracts architecture parameters from the file name of the weights.
-    Only works with standardized weights name.
-    """
-    
+# Извлекает параметры архитектуры из имени файла весов.
+Работает только со стандартизированным именем веса
+def get_config_from_weights(w_path, arch_params, name):    
     w_path = os.path.basename(w_path)
     parts = w_path.split(name)[1]
     parts = parts.split('_')[0]
@@ -486,20 +380,16 @@ def get_config_from_weights(w_path, arch_params, name):
         new_param[param] = param_value
     return new_param
 
-
+# Выбор CLI с заданными параметрами
 def select_option(options, message='', val=None):
-    """ CLI selection given options. """
-    
     while val not in options:
         val = input(message)
         if val not in options:
             logger.error('Invalid choice.')
     return val
 
-
+# Множественный выбор CLI с заданными параметрами
 def select_multiple_options(options, message='', val=None):
-    """ CLI multiple selection given options. """
-    
     n_options = len(options)
     valid_selections = False
     selected_options = []
@@ -514,14 +404,11 @@ def select_multiple_options(options, message='', val=None):
                 logger.error('Invalid choice.')
                 valid_selections = False
             else:
-                selected_options.append(options[int(v)])
-    
+                selected_options.append(options[int(v)])    
     return selected_options
 
-
+# Выбор логического значения CLI
 def select_bool(message=''):
-    """ CLI bool selection. """
-    
     options = ['y', 'n']
     message = message + ' (' + '/'.join(options) + ') '
     val = None
@@ -534,10 +421,8 @@ def select_bool(message=''):
     elif val == 'n':
         return False
 
-
+# Выбор CLI с неотрицательным числом с плавающей запятой
 def select_positive_float(message=''):
-    """ CLI non-negative float selection. """
-    
     value = -1
     while value < 0:
         value = float(input(message))
@@ -545,28 +430,23 @@ def select_positive_float(message=''):
             logger.error('Invalid choice.')
     return value
 
-
+# CLI выбор неотрицательного целого числа
 def select_positive_integer(message='', value=-1):
-    """ CLI non-negative integer selection. """
-    
     while value < 0:
         value = int(input(message))
         if value < 0:
             logger.error('Invalid choice.')
     return value
 
-
-def browse_weights(weights_dir, model='generator'):
-    """ Weights selection from cl. """
-    
+# Выбор весов из CLI
+def browse_weights(weights_dir, model='generator'):    
     exit = False
     while exit is False:
         weights = np.sort(os.listdir(weights_dir))[::-1]
         print_sel = dict(zip(np.arange(len(weights)), weights))
         for k in print_sel.keys():
             logger_message = '{item_n}: {item} \n'.format(item_n=k, item=print_sel[k])
-            logger.info(logger_message)
-        
+            logger.info(logger_message)        
         sel = select_positive_integer('>>> Select folder or weights for {}\n'.format(model))
         if weights[sel].endswith('hdf5'):
             weights_path = os.path.join(weights_dir, weights[sel])
@@ -575,16 +455,10 @@ def browse_weights(weights_dir, model='generator'):
             weights_dir = os.path.join(weights_dir, weights[sel])
     return weights_path
 
-
+# Интерфейс командной строки для настройки сеанса обучения или прогнозирования
+# Принимает в качестве входных данных путь к файлу конфигурации (без расширения '.py') и аргументы, анализируемые из CLI
 def setup(config_file='config.yml', default=False, training=False, prediction=False):
-    """CLI interface to set up the training or prediction session.
-
-    Takes as input the configuration file path (minus the '.py' extension)
-    and arguments parse from CLI.
-    """
-    
-    conf = yaml.load(open(config_file, 'r'), Loader=yaml.FullLoader)
-    
+    conf = yaml.load(open(config_file, 'r'), Loader=yaml.FullLoader)   
     if training:
         session_type = 'training'
     elif prediction:
@@ -595,27 +469,22 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
     if default:
         all_default = 'y'
     else:
-        all_default = select_bool('Default options for everything?')
-    
+        all_default = select_bool('Default options for everything?')    
     if all_default:
         generator = conf['default']['generator']
         if session_type == 'prediction':
             dataset = conf['default']['test_set']
             conf['generators'][generator] = get_config_from_weights(
-                conf['weights_paths']['generator'], conf['generators'][generator], generator
-            )
+                conf['weights_paths']['generator'], conf['generators'][generator], generator)
         elif session_type == 'training':
-            dataset = conf['default']['training_set']
-        
-        return session_type, generator, conf, dataset
-    
+            dataset = conf['default']['training_set']        
+        return session_type, generator, conf, dataset    
     logger.info('Select SR (generator) network')
     generators = {}
     for i, gen in enumerate(conf['generators']):
         generators[str(i)] = gen
         logger.info('{}: {}'.format(i, gen))
-    generator = generators[select_option(generators)]
-    
+    generator = generators[select_option(generators)]    
     load_weights = input('Load pretrained weights for {}? ([y]/n/d) '.format(generator))
     if load_weights == 'n':
         default = select_bool('Load default parameters for {}?'.format(generator))
@@ -629,58 +498,45 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
         logger.info('Loading default weights for {}'.format(generator))
         logger.info(conf['weights_paths']['generator'])
         conf['generators'][generator] = get_config_from_weights(
-            conf['weights_paths']['generator'], conf['generators'][generator], generator
-        )
+            conf['weights_paths']['generator'], conf['generators'][generator], generator)
     else:
         conf['weights_paths']['generator'] = browse_weights(conf['dirs']['weights'], generator)
         conf['generators']['generator'] = get_config_from_weights(
-            conf['weights_paths']['generator'], conf['generators'][generator], generator
-        )
+            conf['weights_paths']['generator'], conf['generators'][generator], generator)
     logger.info('{} parameters:'.format(generator))
-    logger.info(conf['generators'][generator])
-    
+    logger.info(conf['generators'][generator])    
     if session_type == 'training':
         default_loss_weights = select_bool('Use default weights for loss components?')
         if not default_loss_weights:
             conf['loss_weights']['generator'] = select_positive_float(
-                'Input coefficient for pixel-wise generator loss component '
-            )
+                'Input coefficient for pixel-wise generator loss component ')
         use_discr = select_bool('Use an Adversarial Network?')
         if use_discr:
             conf['default']['discriminator'] = True
             discr_w = select_bool('Use pretrained discriminator weights?')
             if discr_w:
                 conf['weights_paths']['discriminator'] = browse_weights(
-                    conf['dirs']['weights'], 'discriminator'
-                )
+                    conf['dirs']['weights'], 'discriminator')
             if not default_loss_weights:
                 conf['loss_weights']['discriminator'] = select_positive_float(
-                    'Input coefficient for Adversarial loss component '
-                )
-        
+                    'Input coefficient for Adversarial loss component ')
         use_feature_extractor = select_bool('Use feature extractor?')
         if use_feature_extractor:
             conf['default']['feature_extractor'] = True
             if not default_loss_weights:
                 conf['loss_weights']['feature_extractor'] = select_positive_float(
-                    'Input coefficient for conv features loss component '
-                )
+                    'Input coefficient for conv features loss component ')
         default_metrics = select_bool('Monitor default metrics?')
         if not default_metrics:
             suggested_list = suggest_metrics(use_discr, use_feature_extractor)
             selected_metrics = select_multiple_options(
-                list(suggested_list.keys()), message='Select metrics to monitor.'
-            )
-            
+                list(suggested_list.keys()), message='Select metrics to monitor.') 
             conf['session']['training']['monitored_metrics'] = {}
             for metric in selected_metrics:
                 conf['session']['training']['monitored_metrics'][metric] = suggested_list[metric]
-            print(conf['session']['training']['monitored_metrics'])
-    
-    dataset = select_dataset(session_type, conf)
-    
+            print(conf['session']['training']['monitored_metrics'])    
+    dataset = select_dataset(session_type, conf)    
     return session_type, generator, conf, dataset
-
 
 def suggest_metrics(discriminator=False, feature_extractor=False, loss_weights={}):
     suggested_metrics = {}
@@ -699,18 +555,15 @@ def suggest_metrics(discriminator=False, feature_extractor=False, loss_weights={
         suggested_metrics['train_feature_extractor_loss'] = 'min'
     return suggested_metrics
 
-
+# Фрагмент командной строки для выбора набора данных для обучения
 def select_dataset(session_type, conf):
-    """ CLI snippet for selection the dataset for training. """
-    
     if session_type == 'training':
         logger.info('Select training set')
         datasets = {}
         for i, data in enumerate(conf['training_sets']):
             datasets[str(i)] = data
             logger.info('{}: {}'.format(i, data))
-        dataset = datasets[select_option(datasets)]
-        
+        dataset = datasets[select_option(datasets)]        
         return dataset
     else:
         logger.info('Select test set')
@@ -718,40 +571,21 @@ def select_dataset(session_type, conf):
         for i, data in enumerate(conf['test_sets']):
             datasets[str(i)] = data
             logger.info('{}: {}'.format(i, data))
-        dataset = datasets[select_option(datasets)]
-        
+        dataset = datasets[select_option(datasets)]        
         return dataset
 
+# Коллекция полезных функций для управления тренировками    
 class TrainerHelper:
-    """Collection of useful functions to manage training sessions.
-
-    Args:
-        generator: Keras model, the super-scaling, or generator, network.
-        logs_dir: path to the directory where the tensorboard logs are saved.
-        weights_dir: path to the directory where the weights are saved.
-        lr_train_dir: path to the directory containing the Low-Res images.
-        feature_extractor: Keras model, feature extractor network for the deep features
-            component of perceptual loss function.
-        discriminator: Keras model, the discriminator network for the adversarial
-            component of the perceptual loss.
-        dataname: string, used to identify what dataset is used for the training session.
-        weights_dictionarycontains the paths, if any to the
-            pre-trained generator's and to the pre-trained discriminator's weights,
-            for transfer learning.
-        fallback_save_every_n_epochs: integer, determines after how many epochs that did not trigger
-            weights saving the weights are despite no metric improvement.
-        max_n_best_weights: maximum amount of weights that are best on some metric that are kept.
-        max_n_other_weights: maximum amount of non-best weights that are kept.
-
-
-    Methods:
-        print_training_setting: see docstring.
-        on_epoch_end: see docstring.
-        epoch_n_from_weights_name: see docstring.
-        initialize_training: see docstring.
-
-    """
-    
+    # generator - Keras model, супермасштабирующая или генераторная сеть
+    # logs_dir - путь к каталогу, в котором сохраняются журналы tensorboard
+    # weights_dir - путь к каталогу, в котором сохранены веса
+    # lr_train_dir - путь к каталогу, в котором хранятся изображения LR
+    # feature_extractor - Keras model, cеть экстракторов признаков для компонента глубоких признаков функции потери
+    # discriminator - Keras model, дискриминаторная сеть для состязательного компонента потери
+    # dataname - string, используется для определения того, какой набор данных используется для сеанса обучения.
+    # fallback_save_every_n_epochs - integer, определяет, через сколько эпох сохранять веса (если не идет улучшение метрики)
+    # max_n_best_weights - максимальное количество весов, которые являются лучшими для некоторой сохраненной метрики
+    # max_n_other_weights - максимальное количество не лучших весов, которые сохраняются
     def __init__(
             self,
             generator,
@@ -771,13 +605,13 @@ class TrainerHelper:
         self.dirs = {'logs': Path(logs_dir), 'weights': Path(weights_dir)}
         self.feature_extractor = feature_extractor
         self.discriminator = discriminator
-        self.dataname = dataname
-        
+        self.dataname = dataname    
+        # для генератора
         if weights_generator:
             self.pretrained_generator_weights = Path(weights_generator)
         else:
-            self.pretrained_generator_weights = None
-        
+            self.pretrained_generator_weights = None   
+        # для дискриминатора
         if weights_discriminator:
             self.pretrained_discriminator_weights = Path(weights_discriminator)
         else:
@@ -796,63 +630,50 @@ class TrainerHelper:
         self.max_n_best_weights = max_n_best_weights
         self.logger = get_logger(__name__)
     
+    # Объединяет имя генератора и параметры его архитектуры
     def _make_basename(self):
-        """ Combines generators's name and its architecture's parameters. """
-        
         gen_name = self.generator.name
         params = [gen_name]
         for param in np.sort(list(self.generator.params.keys())):
             params.append('{g}{p}'.format(g=param, p=self.generator.params[param]))
         return '-'.join(params)
     
+    # Возвращает уникальный идентификатор сеанса
     def get_session_id(self, basename):
-        """ Returns unique session identifier. """
-        
         time_stamp = get_timestamp()
-        
         if basename:
             session_id = '{b}_{ts}'.format(b=basename, ts=time_stamp)
         else:
             session_id = time_stamp
         return session_id
     
+    # Проверяет, доступен ли файл session_config.yml в папке предварительно обученных весов
     def _get_previous_conf(self):
-        """ Checks if a session_config.yml is available in the pretrained weights folder. """
-        
         if self.pretrained_generator_weights:
             session_config_path = (
-                    self.pretrained_generator_weights.parent / self.session_config_name
-            )
+                    self.pretrained_generator_weights.parent / self.session_config_name)
             if session_config_path.exists():
                 return yaml.load(session_config_path.read_text(), Loader=yaml.FullLoader)
             else:
                 self.logger.warning('Could not find previous configuration')
-                return {}
-        
+                return {}        
         return {}
     
+    # Добавляет к существующим настройкам (если есть) текущий словарь настроек по ключу session_id
     def update_config(self, training_settings):
-        """
-        Adds to the existing settings (if any) the current settings dictionary
-        under the session_id key.
-        """
-        
         session_settings = self._get_previous_conf()
-        session_settings.update({self.session_id: training_settings})
-        
+        session_settings.update({self.session_id: training_settings})        
         return session_settings
     
+    # Создает пути, используемые для управления журналами и хранилищем весов
     def _make_callback_paths(self):
-        """ Creates the paths used for managing logs and weights storage. """
-        
         callback_paths = {}
         callback_paths['weights'] = self.dirs['weights'] / self.basename / self.session_id
         callback_paths['logs'] = self.dirs['logs'] / self.basename / self.session_id
         return callback_paths
     
+    # Создает строку, используемую для обозначения весов сеанса обучения
     def _weights_name(self, callback_paths):
-        """ Builds the string used to name the weights of the training session. """
-        
         w_name = {
             'generator': callback_paths['weights']
                          / (self.basename + '{metric}_epoch{epoch:03d}.hdf5')
@@ -866,9 +687,8 @@ class TrainerHelper:
             )
         return w_name
     
+    # Вывод параметров обучения
     def print_training_setting(self, settings):
-        """ Does what it says. """
-        
         self.logger.info('\nTraining details:')
         for k in settings[self.session_id]:
             if isinstance(settings[self.session_id][k], dict):
@@ -883,10 +703,8 @@ class TrainerHelper:
                 self.logger.info(
                     '  {key}: {value}'.format(key=k, value=str(settings[self.session_id][k]))
                 )
-    
+    # Сохраняет вес моделей, отличных от None
     def _save_weights(self, epoch, generator, discriminator=None, metric=None, best=False):
-        """ Saves the weights of the non-None models. """
-        
         if best:
             gen_path = self.weights_name['generator'].with_name(
                 (self.weights_name['generator'].name).format(
@@ -897,7 +715,7 @@ class TrainerHelper:
             gen_path = self.weights_name['generator'].with_name(
                 (self.weights_name['generator'].name).format(metric='', epoch=epoch + 1)
             )
-        # CANT SAVE MODEL DUE TO TF LAYER INSIDE LAMBDA (PIXELSHUFFLE)
+        # Не может сохранить модель из-за слоя TF внутри Лямбда (Pixel Shuffle)
         generator.save_weights(gen_path.as_posix())
         if discriminator:
             if best:
@@ -916,13 +734,10 @@ class TrainerHelper:
         except Exception as e:
             self.logger.warning('Could not remove weights: {}'.format(e))
     
+    # Сканирует папку с весами и удаляет все, кроме:
+    # - max_best новейшие «лучшие» веса
+    # - max_n_weights самые последние веса "других"
     def _remove_old_weights(self, max_n_weights, max_best=5):
-        """
-        Scans the weights folder and removes all but:
-            - the max_best newest 'best' weights.
-            - max_n_weights most recent 'others' weights.
-        """
-        
         w_list = {}
         w_list['all'] = [w for w in self.callback_paths['weights'].iterdir() if '.hdf5' in w.name]
         w_list['best'] = [w for w in w_list['all'] if 'best' in w.name]
@@ -944,12 +759,8 @@ class TrainerHelper:
                     if self.epoch_n_from_weights_name(w.name) not in epoch_list:
                         w.unlink()
     
+    # Управляет операциями, выполняемыми в конце каждой эпохи: проверка метрик, сохранение веса, логирование
     def on_epoch_end(self, epoch, losses, generator, discriminator=None, metrics={}):
-        """
-        Manages the operations that are taken at the end of each epoch:
-        metric checks, weight saves, logging.
-        """
-        
         self.logger.info(losses)
         monitor_op = {'max': np.greater, 'min': np.less}
         extreme = {'max': -np.Inf, 'min': np.Inf}
@@ -957,7 +768,6 @@ class TrainerHelper:
             if metric in losses.keys():
                 if metric not in self.best_metrics.keys():
                     self.best_metrics[metric] = extreme[metrics[metric]]
-                
                 if monitor_op[metrics[metric]](losses[metric], self.best_metrics[metric]):
                     self.logger.info(
                         '{} improved from {:10.5f} to {:10.5f}'.format(
@@ -976,18 +786,14 @@ class TrainerHelper:
                         self._save_weights(epoch, generator, discriminator, best=False)
                         self.since_last_epoch = 0
                         return True
-            
             else:
                 self.logger.warning('{} is not monitored, cannot save weights.'.format(metric))
         self.since_last_epoch += 1
         return False
     
+    # Извлекает номер последней эпохи из названия стандартизированных весов
+    # Работает только в том случае, если веса содержат «эпоху», за которой следуют 3 целых числа, например: some-architectureepoch023suffix.hdf5
     def epoch_n_from_weights_name(self, w_name):
-        """
-        Extracts the last epoch number from the standardized weights name.
-        Only works if the weights contain 'epoch' followed by 3 integers, for example:
-            some-architectureepoch023suffix.hdf5
-        """
         try:
             starting_epoch = int(w_name.split('epoch')[1][0:3])
         except Exception as e:
@@ -998,14 +804,11 @@ class TrainerHelper:
             starting_epoch = 0
         return starting_epoch
     
+    # Функция, выполняемая перед тренировкой
     def initialize_training(self, object):
-        """Function that is exectured prior to training.
-
-        Wraps up most of the functions of this class:
-        load the weights if any are given, generaters names for session and weights,
-        creates directories and prints the training session.
-        """
-        
+        # Завершает большинство функций этого класса:
+        # - загружает веса, если они заданы, имена генераторов для сеанса
+        # - создает каталоги и распечатывает тренировку
         object.weights_generator = self.pretrained_generator_weights
         object.weights_discriminator = self.pretrained_discriminator_weights
         object._load_weights()
@@ -1014,7 +817,6 @@ class TrainerHelper:
             last_epoch = self.epoch_n_from_weights_name(w_name.name)
         else:
             last_epoch = 0
-        
         self.callback_paths = self._make_callback_paths()
         self.callback_paths['weights'].mkdir(parents=True)
         self.callback_paths['logs'].mkdir(parents=True)
@@ -1026,44 +828,29 @@ class TrainerHelper:
         )
         return last_epoch
 
+# Объект класса для настройки и проведения обучения
+# Принимает на вход генератор, который создает изображения SR
+# Условно также сеть дискриминатора и генератор признаков для построения компонентов потери
+# Компилирует модель (модели) и обучает в стиле GANS, если предоставлен дискриминатор, в противном случае проводит обычное обучение ISR
 class Trainer:
-    """Class object to setup and carry the training.
-
-    Takes as input a generator that produces SR images.
-    Conditionally, also a discriminator network and a feature extractor
-        to build the components of the perceptual loss.
-    Compiles the model(s) and trains in a GANS fashion if a discriminator is provided, otherwise
-    carries a regular ISR training.
-
-    Args:
-        generator: Keras model, the super-scaling, or generator, network.
-        discriminator: Keras model, the discriminator network for the adversarial
-            component of the perceptual loss.
-        feature_extractor: Keras model, feature extractor network for the deep features
-            component of perceptual loss function.
-        lr_train_dir: path to the directory containing the Low-Res images for training.
-        hr_train_dir: path to the directory containing the High-Res images for training.
-        lr_valid_dir: path to the directory containing the Low-Res images for validation.
-        hr_valid_dir: path to the directory containing the High-Res images for validation.
-        learning_rate: float.
-        loss_weights: dictionary, use to weigh the components of the loss function.
-            Contains 'generator' for the generator loss component, and can contain 'discriminator' and 'feature_extractor'
-            for the discriminator and deep features components respectively.
-        logs_dir: path to the directory where the tensorboard logs are saved.
-        weights_dir: path to the directory where the weights are saved.
-        dataname: string, used to identify what dataset is used for the training session.
-        weights_generator: path to the pre-trained generator's weights, for transfer learning.
-        weights_discriminator: path to the pre-trained discriminator's weights, for transfer learning.
-        n_validation:integer, number of validation samples used at training from the validation set.
-        flatness: dictionary. Determines determines the 'flatness' threshold level for the training patches.
-            See the TrainerHelper class for more details.
-        lr_decay_frequency: integer, every how many epochs the learning rate is reduced.
-        lr_decay_factor: 0 < float <1, learning rate reduction multiplicative factor.
-
-    Methods:
-        train: combines the networks and triggers training with the specified settings.
-
-    """
+    # generator: Keras model, the super-scaling, or generator, network
+    # discriminator: Keras model, the discriminator network for the adversarial component of the perceptual loss.
+    # feature_extractor: Keras model, feature extractor network for the deep features component of perceptual loss function.
+    # lr_train_dir: path to the directory containing the Low-Res images for training.
+    # hr_train_dir: path to the directory containing the High-Res images for training.
+    # lr_valid_dir: path to the directory containing the Low-Res images for validation.
+    # hr_valid_dir: path to the directory containing the High-Res images for validation.
+    # learning_rate: float.
+    # loss_weights: dictionary, use to weigh the components of the loss function. Contains 'generator' for the generator loss component, and can contain 'discriminator' and 'feature_extractor' for the discriminator and deep features components respectively.
+    # logs_dir: path to the directory where the tensorboard logs are saved
+    # weights_dir: path to the directory where the weights are saved
+    #  dataname: string, used to identify what dataset is used for the training session
+    # weights_generator: path to the pre-trained generator's weights, for transfer learning
+    # weights_discriminator: path to the pre-trained discriminator's weights, for transfer learning
+    #  n_validation:integer, number of validation samples used at training from the validation set
+    # flatness: dictionary. Determines determines the 'flatness' threshold level for the training patches. See the TrainerHelper class for more details
+    # lr_decay_frequency: integer, every how many epochs the learning rate is reduced
+    # lr_decay_factor: 0 < float <1, learning rate reduction multiplicative factor
 
     def __init__(
             self,
