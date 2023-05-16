@@ -8,6 +8,7 @@ from torchvision.transforms import Compose, CenterCrop, ToTensor, Resize
 import sys
 import time
 import argparse
+import zipfile
 from torch.utils.data import DataLoader
 import wget
 from os import remove
