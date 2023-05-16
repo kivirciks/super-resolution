@@ -48,6 +48,9 @@ jobs:
 
   WDSR_Training:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.6"]
     needs: PreprocessDataset
     steps:
       - uses: actions/checkout@v3
@@ -69,7 +72,9 @@ jobs:
   RRDN_Training:
     needs: PreprocessDataset
     runs-on: ubuntu-20.04
-  
+    strategy:
+      matrix:
+        python-version: ["3.6"]  
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
