@@ -9,7 +9,7 @@ import sys
 import time
 import argparse
 from torch.utils.data import DataLoader
-import tarfile
+import wget
 from os import remove
 from os.path import exists, join, basename
 from six.moves import urllib
