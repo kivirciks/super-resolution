@@ -24,6 +24,8 @@ jobs:
         run: pip install six 
       - name: install wget
         run: pip install wget
+      - name: install pyyaml
+        run: pip install pyyaml
         
       - name: training
         env:
