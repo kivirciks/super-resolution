@@ -33,4 +33,5 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python test.py
+        run: python rrdn_train.py
+
