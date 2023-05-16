@@ -367,7 +367,7 @@ def check_parameter_keys(parameter, needed_keys, optional_keys=None, default_val
                 parameter[key] = default_value
 
 # Извлекает параметры архитектуры из имени файла весов.
-Работает только со стандартизированным именем веса
+# Работает только со стандартизированным именем веса
 def get_config_from_weights(w_path, arch_params, name):    
     w_path = os.path.basename(w_path)
     parts = w_path.split(name)[1]
