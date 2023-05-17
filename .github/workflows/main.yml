@@ -1,4 +1,4 @@
-name: Test-Test_rdn
+name: WDSR
 on: [workflow_dispatch]
 jobs:
   RRDN_Training:
@@ -19,17 +19,9 @@ jobs:
         run: pip install numpy
       - name: install tensorflow
         run: pip install tensorflow
-      - name: install wget
-        run: pip install wget     
-      - name: install tqdm
-        run: pip install tqdm
-      - name: install imageio
-        run: pip install imageio
-      - name: install pyyaml
-        run: pip install pyyaml
         
       - name: training
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python rdn.py
+        run: python wdsr.py
