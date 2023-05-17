@@ -945,13 +945,13 @@ def checkpoint(epoch):
     torch.save(model.state_dict(), model_out_path)
     print("Checkpoint saved to {}".format(model_out_path))
 
-cuda = opt.gpu_mode
-if cuda and not torch.cuda.is_available():
-    raise Exception("No GPU found, please run without --cuda")
+#cuda = opt.gpu_mode
+#if cuda and not torch.cuda.is_available():
+#    raise Exception("No GPU found, please run without --cuda")
 
-torch.manual_seed(opt.seed)
-if cuda:
-    torch.cuda.manual_seed(opt.seed)
+#torch.manual_seed(opt.seed)
+#if cuda:
+#    torch.cuda.manual_seed(opt.seed)
 
 print('===> Loading datasets')
 train_set = get_training_set(opt.data_dir, opt.hr_train_dataset, opt.upscale_factor, opt.patch_size, opt.data_augmentation)
