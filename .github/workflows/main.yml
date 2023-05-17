@@ -1,7 +1,7 @@
 name: WDSR
 on: [workflow_dispatch]
 jobs:
-  RRDN_Training:
+  WDSR_Training:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
