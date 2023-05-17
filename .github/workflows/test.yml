@@ -25,6 +25,8 @@ jobs:
         run: pip install tqdm
       - name: install imageio
         run: pip install imageio
+      - name: install matplotlib
+        run: pip install matplotlib
         
       - name: training
         env:
