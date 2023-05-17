@@ -1,4 +1,4 @@
-name:  DBPN
+name:  RCAN
 on: [workflow_dispatch]
 jobs:
   DBPN:
@@ -19,12 +19,16 @@ jobs:
         run: pip install numpy
       - name: install torchvision
         run: pip install torchvision     
-      - name: install wget
-        run: pip install wget 
+      - name: install template
+        run: pip install template
+      - name: install tqdm
+        run: pip install tqdm
+      - name: install imageio
+        run: pip install imageio
         
       - name: training
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python  DBPN.py
+        run: python  RCAN.py
 
