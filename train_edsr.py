@@ -265,7 +265,7 @@ optim_edsr = Adam(learning_rate=PiecewiseConstantDecay(boundaries=[200000], valu
 
 # Компиляция и обучение модели для 1 000 шагов
 model_edsr.compile(optimizer=optim_edsr, loss='mean_absolute_error')
-model_edsr.fit(train_ds, epochs=100, steps_per_epoch=50)
+model_edsr.fit(train_ds, epochs=200, steps_per_epoch=70)
 
 model_edsr.save_weights('edsr_weights.h5')
 
