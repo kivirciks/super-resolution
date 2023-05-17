@@ -29,7 +29,9 @@ jobs:
         run: pip install matplotlib
       - name: install scipy
         run: pip install scipy
-
+      - name: install scikit-image
+        run: pip install scikit-image
+        
       - name: training
         env:
           DB_USERNAME: github
