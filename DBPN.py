@@ -1,5 +1,13 @@
-import torch.utils.data as data
+from __future__ import print_function
 import torch
+import torch.utils.data as data
+from torchvision.transforms import Compose, ToTensor
+import torch.nn as nn
+import torch.optim as optim
+from torchvision.transforms import *
+import torch.backends.cudnn as cudnn
+from torch.autograd import Variable
+from torch.utils.data import DataLoader
 import numpy as np
 import os
 from os import listdir
@@ -7,6 +15,12 @@ from os.path import join
 from PIL import Image, ImageOps
 import random
 from random import randrange
+import math
+import argparse
+from math import log10
+import pdb
+import socket
+import time
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
@@ -121,8 +135,7 @@ class DatasetFromFolderEval(data.Dataset):
       
     def __len__(self):
         return len(self.image_filenames)
-from os.path import join
-from torchvision.transforms import Compose, ToTensor
+
 
 def transform():
     return Compose([
@@ -137,10 +150,6 @@ def get_training_set(data_dir, hr, upscale_factor, patch_size, data_augmentation
 def get_eval_set(lr_dir, upscale_factor):
     return DatasetFromFolderEval(lr_dir, upscale_factor,
                              transform=transform())
-
-
-import torch
-import math
 
 class DenseBlock(torch.nn.Module):
     def __init__(self, input_size, output_size, bias=True, activation='relu', norm='batch'):
@@ -496,11 +505,6 @@ class Upsample2xBlock(torch.nn.Module):
         return out
 
 
-import os
-import torch.nn as nn
-import torch.optim as optim
-from torchvision.transforms import *
-
 class DBPN(nn.Module):
     def __init__(self, num_channels, base_filter, feat, num_stages, scale_factor):
         super(DBPN, self).__init__()
@@ -592,10 +596,6 @@ class DBPN(nn.Module):
         
         return x
     
-import os
-import torch.nn as nn
-import torch.optim as optim
-from torchvision.transforms import *
 
 class DBPNLL(nn.Module):
     def __init__(self, num_channels, base_filter, feat, num_stages, scale_factor):
@@ -763,10 +763,6 @@ class DBPNS(nn.Module):
         return x
         
         
-import os
-import torch.nn as nn
-import torch.optim as optim
-from torchvision.transforms import *
 
 class DBPNITER(nn.Module):
     def __init__(self, num_channels, base_filter, feat, num_stages, scale_factor):
@@ -865,22 +861,7 @@ class DBPNITER(nn.Module):
         
         return x
         
-        
-from __future__ import print_function
-import argparse
-from math import log10
-
-import os
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.backends.cudnn as cudnn
-from torch.autograd import Variable
-from torch.utils.data import DataLoader
-import pdb
-import socket
-import time
-
+      
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
 parser.add_argument('--upscale_factor', type=int, default=8, help="super resolution upscale factor")
