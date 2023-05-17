@@ -27,7 +27,9 @@ jobs:
         run: pip install imageio
       - name: install matplotlib
         run: pip install matplotlib
-        
+      - name: install scipy
+        run: pip install scipy
+
       - name: training
         env:
           DB_USERNAME: github
