@@ -1393,8 +1393,6 @@ from tensorflow.keras.initializers import RandomUniform
 from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
 from tensorflow.keras.models import Model
 
-from ISR.models.imagemodel import ImageModel
-
 WEIGHTS_URLS = {
     'psnr-large': {
         'arch_params': {'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2},
