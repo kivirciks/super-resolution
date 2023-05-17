@@ -21,6 +21,8 @@ from math import log10
 import pdb
 import socket
 import time
+import zipfile
+import wget
 
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
@@ -953,9 +955,33 @@ def checkpoint(epoch):
 #if cuda:
 #    torch.cuda.manual_seed(opt.seed)
 
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_LR_bicubic_X2.zip')
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_LR_bicubic_X2.zip')
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_HR.zip')
+wget.download('http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_HR.zip')
+
+archive_train_LR = 'DIV2K_train_LR_bicubic_X2.zip'
+with zipfile.ZipFile(archive_train_LR, 'r') as zip_file:
+    zip_file.extractall()
+
+#archive_valid_LR = 'DIV2K_valid_LR_bicubic_X2.zip'
+#with zipfile.ZipFile(archive_valid_LR, 'r') as zip_file:
+#    zip_file.extractall()
+    
+archive_train_HR = 'DIV2K_train_HR.zip'
+with zipfile.ZipFile(archive_train_HR, 'r') as zip_file:
+    zip_file.extractall()
+
+#archive_valid_HR = 'DIV2K_valid_HR.zip'
+#with zipfile.ZipFile(archive_valid_HR, 'r') as zip_file:
+#    zip_file.extractall()
+
+
 print('===> Loading datasets')
-train_set = get_training_set(opt.data_dir, opt.hr_train_dataset, opt.upscale_factor, opt.patch_size, opt.data_augmentation)
-training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize, shuffle=True)
+train_set = 'DIV2K_train_HR'
+training_data_loader = 'DIV2K_train_LR_bicubic/X2'
+#train_set = get_training_set(opt.data_dir, opt.hr_train_dataset, opt.upscale_factor, opt.patch_size, opt.data_augmentation)
+#training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize, shuffle=True)
 
 print('===> Building model ', opt.model_type)
 if opt.model_type == 'DBPNLL':
@@ -979,9 +1005,9 @@ if opt.pretrained:
         model.load_state_dict(torch.load(model_name, map_location=lambda storage, loc: storage))
         print('Pre-trained SR model is loaded.')
 
-if cuda:
-    model = model.cuda(gpus_list[0])
-    criterion = criterion.cuda(gpus_list[0])
+#if cuda:
+#    model = model.cuda(gpus_list[0])
+#    criterion = criterion.cuda(gpus_list[0])
 
 optimizer = optim.Adam(model.parameters(), lr=opt.lr, betas=(0.9, 0.999), eps=1e-8)
 
