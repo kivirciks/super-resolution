@@ -92,7 +92,7 @@ jobs:
  
  
   ESRGAN_Training:
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
     strategy:
       matrix:
         python-version: ["3.6"]
