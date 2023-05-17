@@ -1,7 +1,7 @@
 name:  DBPN
 on: [workflow_dispatch]
 jobs:
-  SRCNN:
+  DBPN:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -18,9 +18,7 @@ jobs:
       - name: install numpy
         run: pip install numpy
       - name: install torchvision
-        run: pip install torchvision
-      - name: install cudatoolkit
-        run: pip install pytorch torchvision cudatoolkit=10.1 -c pytorch      
+        run: pip install torchvision     
         
       - name: training
         env:
