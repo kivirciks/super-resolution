@@ -7,6 +7,8 @@ from tensorflow.python.keras.layers import Add, Conv2D, Input, Lambda
 from tensorflow.python.keras.models import Model
 import os
 from tensorflow.python.data.experimental import AUTOTUNE
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers.schedules import PiecewiseConstantDecay
 
 # Задание параметров скачивания датасета
 class DIV2K:
@@ -355,8 +357,8 @@ trainer = WdsrTrainer(model=wdsr_b(scale=4, num_res_blocks=32),
 # PSNR has improved.
 trainer.train(train_ds,
               valid_ds.take(10),
-              steps=300000, 
-              evaluate_every=1000, 
+              steps=30, 
+              evaluate_every=1, 
               save_best_only=True)
 
 # Restore from checkpoint with highest PSNR.
