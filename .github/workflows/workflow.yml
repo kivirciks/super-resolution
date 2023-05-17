@@ -132,4 +132,4 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python train_esrgan.py
+        run: python train_srgan.py
