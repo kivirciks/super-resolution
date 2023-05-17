@@ -44,9 +44,9 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python EDSR_train.py
+        run: python train_EDSR.py
 
-  WDSR_Training:
+  RDN_Training:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -66,13 +66,16 @@ jobs:
         run: pip install tensorflow
       - name: install tensorflow-addons
         run: pip install tensorflow-addons
+      - name: install yandex disk
+        run: pip install yadisk
+        
       - name: training
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python wdsr_train.py
+        run: python train_rdn.py
         
-  RRDN_Training:
+  ESRGAN_Training:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -103,4 +106,4 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python rrdn_train.py
+        run: python train_esrgan.py
