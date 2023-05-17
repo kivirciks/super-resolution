@@ -2,9 +2,9 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import Add, Conv2D, Input, Lambda
 from tensorflow.keras.models import Model
-
 import os
-import tensorflow as tf
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers.schedules import PiecewiseConstantDecay
 from tensorflow.python.data.experimental import AUTOTUNE
 
 # Задание параметров скачивания датасета
@@ -205,7 +205,7 @@ def edsr(scale, num_filters=64, num_res_blocks=8, res_block_scaling=None):
     x_in = Input(shape=(None, None, 3))
     x = Lambda(normalize)(x_in)
 
-    # Задание слоев сверточной нейронной сети
+    # Задание слоев Conv
     x = b = Conv2D(num_filters, 3, padding='same')(x)
     for i in range(num_res_blocks):
         b = res_block(b, num_filters, res_block_scaling)
@@ -218,7 +218,7 @@ def edsr(scale, num_filters=64, num_res_blocks=8, res_block_scaling=None):
     x = Lambda(denormalize)(x)
     return Model(x_in, x, name="edsr")
 
-# Задание выходных слоев EDSR
+# Задание слоев ResBlock
 def res_block(x_in, filters, scaling):
     x = Conv2D(filters, 3, padding='same', activation='relu')(x_in)
     x = Conv2D(filters, 3, padding='same')(x)
@@ -227,7 +227,7 @@ def res_block(x_in, filters, scaling):
     x = Add()([x_in, x])
     return x
 
-# Субпиксельная свертка
+# Задание слоев Upsample
 def upsample(x, scale, num_filters):
     def upsample_1(x, factor, **kwargs):
         x = Conv2D(num_filters * (factor ** 2), 3, padding='same', **kwargs)(x)
@@ -252,10 +252,6 @@ def normalize(x):
 # Денормализация
 def denormalize(x):
     return x * 127.5 + DIV2K_RGB_MEAN
-
-import os
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.optimizers.schedules import PiecewiseConstantDecay
 
 # Создание директории для сохранения весов
 weights_dir = 'weights/EDSR'
