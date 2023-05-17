@@ -22,6 +22,8 @@ jobs:
         run: pip install torchvision
       - name: install wget
         run: pip install wget     
+      - name: install six
+        run: pip install six   
         
       - name: training
         env:
