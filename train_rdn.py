@@ -1734,9 +1734,9 @@ trainer.train(
 )
 
 
-rdn.save_weights('rdn_weights.h5')
+#rdn.save_weights('rdn_weights.h5')
 
-import yadisk
-y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
+#import yadisk
+#y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
 # Сохранение весов
-rrdn.save_weights(y.upload('rrdn_weights.h5', '/weights_dir/rrdn_weights.h5'))
+#rdn.save_weights(y.upload('rrdn_weights.h5', '/weights_dir/rrdn_weights.h5'))
