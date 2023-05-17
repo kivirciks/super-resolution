@@ -19,6 +19,8 @@ jobs:
         run: pip install numpy
       - name: install torchvision
         run: pip install torchvision     
+      - name: install wget
+        run: pip install wget 
         
       - name: training
         env:
