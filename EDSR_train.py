@@ -273,7 +273,7 @@ model_edsr.fit(train_ds, epochs=100, steps_per_epoch=50)
 
 model_edsr.save_weights('edsr_weights.h5')
 
-import yadisk
-y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
+#import yadisk
+#y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
 # Сохранение весов
-model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h5'))
+#model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h5'))
