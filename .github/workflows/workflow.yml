@@ -16,6 +16,8 @@ jobs:
       - name: unpack dataset archive
         run: unzip div2-k-dataset-for-super-resolution.zip
 
+
+
   PreprocessDataset:
     runs-on: ubuntu-latest
     needs: LoadDataset
@@ -27,6 +29,8 @@ jobs:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python preprocessing.ipynb
+
+
 
   EDSR_Training:
     runs-on: ubuntu-latest
@@ -44,7 +48,9 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python train_EDSR.py
+        run: python train_edsr.py
+
+
 
   RDN_Training:
     runs-on: ubuntu-20.04
@@ -68,13 +74,17 @@ jobs:
         run: pip install tensorflow-addons
       - name: install yandex disk
         run: pip install yadisk
+      - name: install wget
+        run: pip install wget     
         
       - name: training
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python train_rdn.py
-        
+ 
+ 
+ 
   ESRGAN_Training:
     runs-on: ubuntu-20.04
     strategy:
