@@ -203,6 +203,42 @@ train_ds = train.dataset(batch_size=16, random_transform=True)
 # Усреднение RGB каналов
 DIV2K_RGB_MEAN = np.array([0.4488, 0.4371, 0.4040]) * 255
 
+# Задание выходных слоев EDSR
+def res_block(x_in, filters, scaling):
+    x = Conv2D(filters, 3, padding='same', activation='relu')(x_in)
+    x = Conv2D(filters, 3, padding='same')(x)
+    if scaling:
+        x = Lambda(lambda t: t * scaling)(x)
+    x = Add()([x_in, x])
+    return x
+
+# Субпиксельная свертка
+def upsample(x, scale, num_filters):
+    def upsample_1(x, factor, **kwargs):
+        x = Conv2D(num_filters * (factor ** 2), 3, padding='same', **kwargs)(x)
+        return Lambda(pixel_shuffle(scale=factor))(x)
+    if scale == 2:
+        x = upsample_1(x, 2, name='conv2d_1_scale_2')
+    elif scale == 3:
+        x = upsample_1(x, 3, name='conv2d_1_scale_3')
+    elif scale == 4:
+        x = upsample_1(x, 2, name='conv2d_1_scale_2')
+        x = upsample_1(x, 2, name='conv2d_2_scale_2')
+    return x
+
+# Перемешивание пикселей
+def pixel_shuffle(scale):
+    return lambda x: tf.nn.depth_to_space(x, scale)
+
+# Нормализация
+def normalize(x):
+    return (x - DIV2K_RGB_MEAN) / 127.5
+
+# Денормализация
+def denormalize(x):
+    return x * 127.5 + DIV2K_RGB_MEAN
+
+
 class Trainer:
     def __init__(self,
                  model,
