@@ -8,7 +8,7 @@
 #### Задачи:
 1. Проанализировать найденный датасет.
 2. Спроектировать архитектуру системы искусственного интеллекта.
-3. Подготовить данные для обучения нейронных сетей EDSR (Enhanced Deep Residual Networks for Single Image Super-Resolution) и SRGAN (Single Image Super-Resolution using a Generative Adversarial Network).
+3. Подготовить данные для обучения нейронных сетей EDSR (Enhanced Deep Residual Networks for Single Image Super-Resolution), RDN (Residual Dense Network) и SRGAN (Single Image Super-Resolution using a Generative Adversarial Network).
 4. Обучить модель на основе обучающей выборки и провести оценку полученных результатов.
 5. Подготовить тестовый набор данных и провести оценку полученных результатов на данном наборе.
 6. Выбрать оптимальную модель нейронной сети для решения задачи Super-Resolution, исходя из качества и скорости работы алгоритмов.
