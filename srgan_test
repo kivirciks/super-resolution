@@ -11,16 +11,19 @@ import imageio
 import argparse
 from datetime import datetime
 import yaml
-
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 # нейросетевые библиотеки Keras
 import tensorflow as tf
 from tensorflow.keras.initializers import RandomUniform
-from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda
+from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, Dense, BatchNormalization, LeakyReLU
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import backend as K
+from tensorflow.keras.applications.vgg19 import VGG19
 import tensorflow.keras.backend as K
+
 
 # Логгирование
 def get_logger(name, job_dir='.'):
@@ -833,24 +836,24 @@ class TrainerHelper:
 # Условно также сеть дискриминатора и генератор признаков для построения компонентов потери
 # Компилирует модель (модели) и обучает в стиле GANS, если предоставлен дискриминатор, в противном случае проводит обычное обучение ISR
 class Trainer:
-    # generator: Keras model, the super-scaling, or generator, network
-    # discriminator: Keras model, the discriminator network for the adversarial component of the perceptual loss.
-    # feature_extractor: Keras model, feature extractor network for the deep features component of perceptual loss function.
-    # lr_train_dir: path to the directory containing the Low-Res images for training.
-    # hr_train_dir: path to the directory containing the High-Res images for training.
-    # lr_valid_dir: path to the directory containing the Low-Res images for validation.
-    # hr_valid_dir: path to the directory containing the High-Res images for validation.
-    # learning_rate: float.
-    # loss_weights: dictionary, use to weigh the components of the loss function. Contains 'generator' for the generator loss component, and can contain 'discriminator' and 'feature_extractor' for the discriminator and deep features components respectively.
-    # logs_dir: path to the directory where the tensorboard logs are saved
-    # weights_dir: path to the directory where the weights are saved
-    #  dataname: string, used to identify what dataset is used for the training session
-    # weights_generator: path to the pre-trained generator's weights, for transfer learning
-    # weights_discriminator: path to the pre-trained discriminator's weights, for transfer learning
-    #  n_validation:integer, number of validation samples used at training from the validation set
-    # flatness: dictionary. Determines determines the 'flatness' threshold level for the training patches. See the TrainerHelper class for more details
-    # lr_decay_frequency: integer, every how many epochs the learning rate is reduced
-    # lr_decay_factor: 0 < float <1, learning rate reduction multiplicative factor
+    # generator - Keras model, супермасштабирующая или генераторная сеть
+    # discriminator - Keras model, дискриминатор, состязательная модель для функции потери
+    # feature_extractor - Keras model, cеть экстракторов признаков для компонента глубоких признаков функции потери
+    # lr_train_dir - путь к каталогу, в котором хранятся изображения LR для обученя
+    # hr_train_dir - путь к каталогу, в котором хранятся изображения HR для обучения
+    # lr_valid_dir - путь к каталогу, в котором хранятся изображения LR для тестирования
+    # hr_valid_dir - путь к каталогу, в котором хранятся изображения HR для тестирования
+    # learning_rate - float
+    # loss_weights - словарь, веса для функции потерь. Содержит generator, discriminator и feature_extractor
+    # logs_dir - директория, куда сохраняются логи
+    # weights_dir - директория, куда сохраняются веса
+    # dataname - string, используется для определения того, какой набор данных используется в этом обучения
+    # weights_generator - веса для генератора
+    # weights_discriminator - веса для дискриминатора
+    # n_validation - integer, количество validation samples, использованных при обучении validation set
+    # flatness - словарь, определяет пороговый уровень «равномерности» для тренировочных патчей (отсылка на TrainerHelper)
+    # lr_decay_frequency: integer, через сколько эпох скорость обучения снижается
+    # lr_decay_factor: 0 < float <1, мультипликативный коэффициент снижения скорости обучения
 
     def __init__(
             self,
@@ -936,47 +939,36 @@ class Trainer:
             n_validation_samples=n_validation,
         )
 
+    # Проверка работоспособности параметров
     def _parameters_sanity_check(self):
-        """ Parameteres sanity check. """
-
         if self.discriminator:
             assert self.lr_patch_size * self.scale == self.discriminator.patch_size
             self.adam_optimizer
         if self.feature_extractor:
             assert self.lr_patch_size * self.scale == self.feature_extractor.patch_size
-
         check_parameter_keys(
             self.learning_rate,
             needed_keys=['initial_value'],
             optional_keys=['decay_factor', 'decay_frequency'],
-            default_value=None,
-        )
+            default_value=None,)
         check_parameter_keys(
             self.flatness,
             needed_keys=[],
             optional_keys=['min', 'increase_frequency', 'increase', 'max'],
-            default_value=0.0,
-        )
+            default_value=0.0,)
         check_parameter_keys(
             self.adam_optimizer,
             needed_keys=['beta1', 'beta2'],
             optional_keys=['epsilon'],
-            default_value=None,
-        )
+            default_value=None,)
         check_parameter_keys(self.log_dirs, needed_keys=['logs', 'weights'])
-
+    # Создает комбинированную модель, которая содержит генераторную сеть, а также дискриминатор и экстрактор признаков, если таковые определены
     def _combine_networks(self):
-        """
-        Constructs the combined model which contains the generator network,
-        as well as discriminator and geature extractor, if any are defined.
-        """
-
         lr = Input(shape=(self.lr_patch_size,) * 2 + (3,))
         sr = self.generator.model(lr)
         outputs = [sr]
         losses = [self.losses['generator']]
         loss_weights = [self.loss_weights['generator']]
-
         if self.discriminator:
             self.discriminator.model.trainable = False
             validity = self.discriminator.model(sr)
@@ -989,24 +981,19 @@ class Trainer:
             outputs.extend([*sr_feats])
             losses.extend([self.losses['feature_extractor']] * len(sr_feats))
             loss_weights.extend(
-                [self.loss_weights['feature_extractor'] / len(sr_feats)] * len(sr_feats)
-            )
+                [self.loss_weights['feature_extractor'] / len(sr_feats)] * len(sr_feats))
         combined = Model(inputs=lr, outputs=outputs)
-        # https://stackoverflow.com/questions/42327543/adam-optimizer-goes-haywire-after-200k-batches-training-loss-grows
         optimizer = Adam(
             beta_1=self.adam_optimizer['beta1'],
             beta_2=self.adam_optimizer['beta2'],
             lr=self.learning_rate['initial_value'],
-            epsilon=self.adam_optimizer['epsilon'],
-        )
+            epsilon=self.adam_optimizer['epsilon'],)
         combined.compile(
-            loss=losses, loss_weights=loss_weights, optimizer=optimizer, metrics=self.metrics
-        )
+            loss=losses, loss_weights=loss_weights, optimizer=optimizer, metrics=self.metrics)
         return combined
-
+   
+   # Планировщик обновлений скорости обучения
     def _lr_scheduler(self, epoch):
-        """ Scheduler for the learning rate updates. """
-
         n_decays = epoch // self.learning_rate['decay_frequency']
         lr = self.learning_rate['initial_value'] * (self.learning_rate['decay_factor'] ** n_decays)
         # no lr below minimum control 10e-7
@@ -1017,33 +1004,24 @@ class Trainer:
             n_increases = epoch // self.flatness['increase_frequency']
         else:
             return self.flatness['min']
-
         f = self.flatness['min'] + n_increases * self.flatness['increase']
-
         return min(self.flatness['max'], f)
 
+    # Загружает предварительно обученные веса из заданного пути, если они есть. Если дискриминатор определен, делает то же самое
     def _load_weights(self):
-        """
-        Loads the pretrained weights from the given path, if any is provided.
-        If a discriminator is defined, does the same.
-        """
-
         if self.weights_generator:
             self.model.get_layer('generator').load_weights(str(self.weights_generator))
-
         if self.discriminator:
             if self.weights_discriminator:
                 self.model.get_layer('discriminator').load_weights(str(self.weights_discriminator))
                 self.discriminator.model.load_weights(str(self.weights_discriminator))
 
+    # Создает словарь для отслеживания функции потерь
     def _format_losses(self, prefix, losses, model_metrics):
-        """ Creates a dictionary for tensorboard tracking. """
-
         return dict(zip([prefix + m for m in model_metrics], losses))
-
+   
+   # Подводит итоги обучения
     def update_training_config(self, settings):
-        """ Summarizes training setting. """
-
         _ = settings['training_parameters'].pop('weights_generator')
         _ = settings['training_parameters'].pop('self')
         _ = settings['training_parameters'].pop('generator')
@@ -1053,7 +1031,6 @@ class Trainer:
         settings['generator']['name'] = self.generator.name
         settings['generator']['parameters'] = self.generator.params
         settings['generator']['weights_generator'] = self.weights_generator
-
         _ = settings['training_parameters'].pop('weights_discriminator')
         if self.discriminator:
             settings['discriminator'] = {}
@@ -1068,32 +1045,22 @@ class Trainer:
             settings['feature_extractor']['layers'] = self.feature_extractor.layers_to_extract
         else:
             settings['feature_extractor'] = None
-
         return settings
 
+    # Продолжает обучение в течение заданного количества эпох. Отправляет потери в Tensorboard.
     def train(self, epochs, steps_per_epoch, batch_size, monitored_metrics):
-        """
-        Carries on the training for the given number of epochs.
-        Sends the losses to Tensorboard.
-
-        Args:
-            epochs: how many epochs to train for.
-            steps_per_epoch: how many batches epoch.
-            batch_size: amount of images per batch.
-            monitored_metrics: dictionary, the keys are the metrics that are monitored for the weights
-                saving logic. The values are the mode that trigger the weights saving ('min' vs 'max').
-        """
-
+    # epochs - в течении скольких эпох идет обучение
+    # steps_per_epoch - сколько батчев в каждой эпохе
+    # batch_size - размер батча
+    # monitored_metrics: словарь, отслеживание логики сохранения весов (минимум против максимума
         self.settings['training_parameters']['steps_per_epoch'] = steps_per_epoch
         self.settings['training_parameters']['batch_size'] = batch_size
         starting_epoch = self.helper.initialize_training(
-            self
-        )  # load_weights, creates folders, creates basename
-
+            self)  
+        # загружаем веса, создаем директории, создаем базовое имя
         self.tensorboard = TensorBoard(log_dir=str(self.helper.callback_paths['logs']))
         self.tensorboard.set_model(self.model)
-
-        # validation data
+        # данные для тестирования
         validation_set = self.valid_dh.get_validation_set(batch_size)
         y_validation = [validation_set['hr']]
         if self.discriminator:
@@ -1121,30 +1088,26 @@ class Trainer:
                 y_train = [batch['hr']]
                 training_losses = {}
 
-                ## Discriminator training
+                # Обучение дискриминатора
                 if self.discriminator:
                     sr = self.generator.model.predict(batch['lr'])
                     d_loss_real = self.discriminator.model.train_on_batch(batch['hr'], valid)
                     d_loss_fake = self.discriminator.model.train_on_batch(sr, fake)
                     d_loss_fake = self._format_losses(
-                        'train_d_fake_', d_loss_fake, self.discriminator.model.metrics_names
-                    )
+                        'train_d_fake_', d_loss_fake, self.discriminator.model.metrics_names)
                     d_loss_real = self._format_losses(
-                        'train_d_real_', d_loss_real, self.discriminator.model.metrics_names
-                    )
+                        'train_d_real_', d_loss_real, self.discriminator.model.metrics_names)
                     training_losses.update(d_loss_real)
                     training_losses.update(d_loss_fake)
                     y_train.append(valid)
 
-                ## Generator training
+                # Обучение генератора
                 if self.feature_extractor:
                     hr_feats = self.feature_extractor.model.predict(batch['hr'])
                     y_train.extend([*hr_feats])
-
                 model_losses = self.model.train_on_batch(batch['lr'], y_train)
                 model_losses = self._format_losses('train_', model_losses, self.model.metrics_names)
                 training_losses.update(model_losses)
-
                 self.tensorboard.on_epoch_end(epoch * steps_per_epoch + step, training_losses)
                 self.logger.debug('Losses at step {s}:\n {l}'.format(s=step, l=training_losses))
 
@@ -1152,11 +1115,9 @@ class Trainer:
             self.logger.info('Epoch {} took {:10.1f}s'.format(epoch, elapsed_time))
 
             validation_losses = self.model.evaluate(
-                validation_set['lr'], y_validation, batch_size=batch_size
-            )
+                validation_set['lr'], y_validation, batch_size=batch_size)
             validation_losses = self._format_losses(
-                'val_', validation_losses, self.model.metrics_names
-            )
+                'val_', validation_losses, self.model.metrics_names)
 
             if epoch == starting_epoch:
                 remove_metrics = []
@@ -1168,7 +1129,7 @@ class Trainer:
                 for metric in remove_metrics:
                     _ = monitored_metrics.pop(metric)
 
-            # should average train metrics
+            # усреднение показателей обучения
             end_losses = {}
             end_losses.update(validation_losses)
             end_losses.update(training_losses)
@@ -1182,77 +1143,39 @@ class Trainer:
             )
             self.tensorboard.on_epoch_end(epoch, validation_losses)
         self.tensorboard.on_train_end(None)
-        
-        
-from tensorflow.keras.models import Model
-from tensorflow.keras.applications.vgg19 import VGG19
 
+# Объект класса, который извлекает модель VGG19 keras, обученную на наборе данных imagenet, 
+# Объявляет <layers_to_extract> в качестве выходных слоев. Использует функцию потерь
 class Cut_VGG19:
-    """
-    Class object that fetches keras' VGG19 model trained on the imagenet dataset
-    and declares <layers_to_extract> as output layers. Used as feature extractor
-    for the perceptual loss function.
-
-    Args:
-        layers_to_extract: list of layers to be declared as output layers.
-        patch_size: integer, defines the size of the input (patch_size x patch_size).
-
-    Attributes:
-        loss_model: multi-output vgg architecture with <layers_to_extract> as output layers.
-    """
-    
+# layers_to_extract - список слоев, которые должны быть объявлены как выходные слои
+# patch_size - integer, определяет размер ввода (patch_size x patch_size)
     def __init__(self, patch_size, layers_to_extract):
         self.patch_size = patch_size
         self.input_shape = (patch_size,) * 2 + (3,)
         self.layers_to_extract = layers_to_extract
-        self.logger = get_logger(__name__)
-        
+        self.logger = get_logger(__name__)        
         if len(self.layers_to_extract) > 0:
             self._cut_vgg()
         else:
             self.logger.error('Invalid VGG instantiation: extracted layer must be > 0')
             raise ValueError('Invalid VGG instantiation: extracted layer must be > 0')
     
-    def _cut_vgg(self):
-        """
-        Loads pre-trained VGG, declares as output the intermediate
-        layers selected by self.layers_to_extract.
-        """
-        
+    # загружает предварительно обученный VGG, объявляет в качестве вывода промежуточные слои, выбранные self.layers_to_extract
+    def _cut_vgg(self):        
         vgg = VGG19(weights='imagenet', include_top=False, input_shape=self.input_shape)
         vgg.trainable = False
         outputs = [vgg.layers[i].output for i in self.layers_to_extract]
         self.model = Model([vgg.input], outputs)
         self.model._name = 'feature_extractor'
         self.name = 'vgg19'  # used in weights naming
-        
-        
 
-
-from tensorflow.keras.layers import Input, Activation, Dense, Conv2D, BatchNormalization, \
-    LeakyReLU
-from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
-
+# Реализация дискриминатора для состязательной составляющей функции потери
 class Discriminator:
-    """
-    Implementation of the discriminator network for the adversarial
-    component of the perceptual loss.
-
-    Args:
-        patch_size: integer, determines input size as (patch_size, patch_size, 3).
-        kernel_size: size of the kernel in the conv blocks.
-
-    Attributes:
-        model: Keras model.
-        name: name used to identify what discriminator is used during GANs training.
-        model._name: identifies this network as the discriminator network
-            in the compound model built by the trainer class.
-        block_param: dictionary, determines the number of filters and the strides for each
-            conv block.
-
-    """
-    
+# patch_size - integer, определяет размер ввода как (patch_size, patch_size, 3)
+# kernel_size - размер kernel в conv блоках
+# model - Keras model
+# name - имя, используемое для определения того, какой дискриминатор используется во время обучения GAN
+# block_param - словарь, определяет количество фильтров и шагов для каждого блока conv  
     def __init__(self, patch_size, kernel_size=3):
         self.patch_size = patch_size
         self.kernel_size = kernel_size
@@ -1266,9 +1189,8 @@ class Discriminator:
         self.model._name = 'discriminator'
         self.name = 'srgan-large'
     
+    # Convolutional layer + Leaky ReLU + conditional BN
     def _conv_block(self, input, filters, strides, batch_norm=True, count=None):
-        """ Convolutional layer + Leaky ReLU + conditional BN. """
-        
         x = Conv2D(
             filters,
             kernel_size=self.kernel_size,
@@ -1281,9 +1203,8 @@ class Discriminator:
             x = BatchNormalization(momentum=0.8)(x)
         return x
     
+    # Объединяет слои дискриминатора
     def _build_disciminator(self):
-        """ Puts the discriminator's layers together. """
-        
         HR = Input(shape=(self.patch_size, self.patch_size, 3))
         x = self._conv_block(HR, filters=64, strides=1, batch_norm=False, count=1)
         for i in range(self.block_num):
@@ -1297,42 +1218,23 @@ class Discriminator:
         x = LeakyReLU(alpha=0.2)(x)
         # x = Flatten()(x)
         x = Dense(1, name='Dense_last')(x)
-        HR_v_SR = Activation('sigmoid')(x)
-        
+        HR_v_SR = Activation('sigmoid')(x) 
         discriminator = Model(inputs=HR, outputs=HR_v_SR)
         return discriminator
-    
-    
-import numpy as np
 
+# ISR models parent class. Содержит функции, общие для моделей супермасштабирования.
 class ImageModel:
-    """ISR models parent class.
-
-    Contains functions that are common across the super-scaling models.
-    """
-    
+    # Преобразует массив изображений в подходящий формат
     def predict(self, input_image_array, by_patch_of_size=None, batch_size=10, padding_size=2):
-        """
-        Processes the image array into a suitable format
-        and transforms the network output in a suitable image format.
-
-        Args:
-            input_image_array: input image array.
-            by_patch_of_size: for large image inference. Splits the image into
-                patches of the given size.
-            padding_size: for large image inference. Padding between the patches.
-                Increase the value if there is seamlines.
-            batch_size: for large image inferce. Number of patches processed at a time.
-                Keep low and increase by_patch_of_size instead.
-        Returns:
-            sr_img: image output.
-        """
-        
+    # input_image_array - входящий массив изображений
+    # by_patch_of_size - для вывода больших изображений. Разбивает изображение на фрагменты заданного размера
+    # padding_size - для вывода больших изображений. Отступ между патчами. Нужно увеличить это значение, если есть накладка ("линия шва")
+    # batch_size - для вывода больших изображений. Количество патчей, обрабатываемых за раз (лучше указывать маленькое значение, при необходимости увеличивая by_patch_of_size)
+    # Returns: sr_img - выходное изображение     
         if by_patch_of_size:
             lr_img = process_array(input_image_array, expand=False)
             patches, p_shape = split_image_into_overlapping_patches(
-                lr_img, patch_size=by_patch_of_size, padding_size=padding_size
-            )
+                lr_img, patch_size=by_patch_of_size, padding_size=padding_size)
             # return patches
             for i in range(0, len(patches), batch_size):
                 batch = self.model.predict(patches[i: i + batch_size])
@@ -1340,7 +1242,6 @@ class ImageModel:
                     collect = batch
                 else:
                     collect = np.append(collect, batch, axis=0)
-            
             scale = self.scale
             padded_size_scaled = tuple(np.multiply(p_shape[0:2], scale)) + (3,)
             scaled_image_shape = tuple(np.multiply(input_image_array.shape[0:2], scale)) + (3,)
@@ -1348,13 +1249,10 @@ class ImageModel:
                 collect,
                 padded_image_shape=padded_size_scaled,
                 target_shape=scaled_image_shape,
-                padding_size=padding_size * scale,
-            )
-        
+                padding_size=padding_size * scale,)       
         else:
             lr_img = process_array(input_image_array)
-            sr_img = self.model.predict(lr_img)[0]
-        
+            sr_img = self.model.predict(lr_img)[0] 
         sr_img = process_output(sr_img)
         return sr_img
 
@@ -1366,15 +1264,9 @@ WEIGHTS_URLS = {
     },
 }
 
-
-def make_model(arch_params, patch_size):
-    """ Returns the model.
-
-    Used to select the model.
-    """
-    
+# выбор модели
+def make_model(arch_params, patch_size):    
     return RRDN(arch_params, patch_size)
-
 
 def get_network(weights):
     if weights in WEIGHTS_URLS.keys():
@@ -1387,44 +1279,33 @@ def get_network(weights):
     kernel_size = 3
     return arch_params, c_dim, kernel_size, url, name
 
-
+# Объявление SRGAN
+# https://arxiv.org/abs/1809.00219 (Wang et al. 2018)
 class RRDN(ImageModel):
-    """Implementation of the Residual in Residual Dense Network for image super-scaling.
+    # arch_params - словарь, содержит параметры нейронной сети C, D, G, G0, T, x
+    # patch_size - integer or None, определяет размер ввода. Требуется только во время обучения, для прогнозирования установлено значение None
+    # beta: float <= 1, параметр масштабирования для остаточных соединений
+    # c_dim: integer, количество каналов входного изображения
+    # kernel_size: integer, общий размер ядра для сверток
+    # upscaling: string, 'ups' or 'shuffle', определяет, какую реализацию уровня масштабирования использовать
+    # init_val: экстремальные значения для инициализатора RandomUniform
+    #  weights: string, если не пусто, загрузка предварительно обученных весов
 
-    The network is the one described in https://arxiv.org/abs/1809.00219 (Wang et al. 2018).
-
-    Args:
-        arch_params: dictionary, contains the network parameters C, D, G, G0, T, x.
-        patch_size: integer or None, determines the input size. Only needed at
-            training time, for prediction is set to None.
-        beta: float <= 1, scaling parameter for the residual connections.
-        c_dim: integer, number of channels of the input image.
-        kernel_size: integer, common kernel size for convolutions.
-        upscaling: string, 'ups' or 'shuffle', determines which implementation
-            of the upscaling layer to use.
-        init_val: extreme values for the RandomUniform initializer.
-        weights: string, if not empty, download and load pre-trained weights.
-            Overrides other parameters.
-
-    Attributes:
-        C: integer, number of conv layer inside each residual dense blocks (RDB).
-        D: integer, number of RDBs inside each Residual in Residual Dense Block (RRDB).
-        T: integer, number or RRDBs.
-        G: integer, number of convolution output filters inside the RDBs.
-        G0: integer, number of output filters of each RDB.
-        x: integer, the scaling factor.
-        model: Keras model of the RRDN.
-        name: name used to identify what upscaling network is used during training.
-        model._name: identifies this network as the generator network
-            in the compound model built by the trainer class.
-    """
-    
+    # Атрибуты
+    # C: integer, number of conv layer inside each residual dense blocks (RDB)
+    # D: integer, number of RDBs inside each Residual in Residual Dense Block (RRDB)
+    # T: integer, number or RRDBs
+    # G: integer, number of convolution output filters inside the RDBs
+    # G0: integer, number of output filters of each RDB
+    # x: integer, the scaling factor
+    # model: Keras model of the RRDN
+    # name: name used to identify what upscaling network is used during training
+    # model._name: identifies this network as the generator network in the compound model built by the trainer class
     def __init__(
             self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05, weights=''
     ):
         if weights:
-            arch_params, c_dim, kernel_size, url, fname = get_network(weights)
-        
+            arch_params, c_dim, kernel_size, url, fname = get_network(weights)        
         self.params = arch_params
         self.beta = beta
         self.c_dim = c_dim
@@ -1444,15 +1325,9 @@ class RRDN(ImageModel):
             weights_path = tf.keras.utils.get_file(fname=fname, origin=url)
             self.model.load_weights(weights_path)
     
-    def _dense_block(self, input_layer, d, t):
-        """
-        Implementation of the (Residual) Dense Block as in the paper
-        Residual Dense Network for Image Super-Resolution (Zhang et al. 2018).
-
-        Residuals are incorporated in the RRDB.
-        d is an integer only used for naming. (d-th block)
-        """
-        
+    # Реализация (остаточного) глубокого слоя, как в статье
+    # d - integer, просто для названия (d-th block)
+    def _dense_block(self, input_layer, d, t):        
         x = input_layer
         for c in range(1, self.C + 1):
             F_dc = Conv2D(
@@ -1474,14 +1349,9 @@ class RRDN(ImageModel):
             name='LFF_%d_%d' % (t, d),
         )(x)
         return x
-    
-    def _RRDB(self, input_layer, t):
-        """Residual in Residual Dense Block.
-
-        t is integer, for naming of RRDB.
-        beta is scalar.
-        """
-        
+   
+    # Residual in Residual Dense Block
+    def _RRDB(self, input_layer, t):        
         # SUGGESTION: MAKE BETA LEARNABLE
         x = input_layer
         for d in range(1, self.D + 1):
@@ -1492,8 +1362,8 @@ class RRDN(ImageModel):
         x = Add(name='RRDB_%d_out' % (t))([input_layer, x])
         return x
     
+    # Реализация PixelShuffle части масштабирования
     def _pixel_shuffle(self, input_layer):
-        """ PixelShuffle implementation of the upscaling part. """
         x = Conv2D(
             self.c_dim * self.scale ** 2,
             kernel_size=3,
@@ -1501,7 +1371,6 @@ class RRDN(ImageModel):
             kernel_initializer=self.initializer,
             name='PreShuffle',
         )(input_layer)
-
         return PixelShuffle(self.scale)(x)
     
     def _build_rdn(self):
