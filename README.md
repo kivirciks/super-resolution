@@ -24,10 +24,10 @@
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photoes.png" width="400">
 Рисунок 1. Распределение первых 10-ти фотографий относительно параметров Entropy и Complexity
 
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/%D0%A1%D0%BB%D0%BE%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%8C.png" width="400">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Complexity.png" width="400">
 Рисунок 2. Увеличение Complexity с уменьшением изображения (черный - x4, зеленый - x3, красный - x2, синий - HR)
 
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/%D0%AD%D0%BD%D1%82%D1%80%D0%BE%D0%BF%D0%B8%D1%8F.png" width="400">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Entropy.png" width="400">
 Рисунок 3. Уменьшение Entropy с уменьшением изображения (черный - x4, зеленый - x3, красный - x2, синий - HR)
 
 #### Демонстрация целесообразности использования выбранного датасета
@@ -44,7 +44,7 @@
 
 #### UML-диаграммы
 ##### Диаграмма активностей
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Workflow.png" width="1000">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/UML_Workflow.png" width="1000">
 Рисунок 4. Диаграмма активностей
 
 ##### Диаграмма компонентов
@@ -112,17 +112,57 @@ y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_
 # Сохранение весов
 model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h5'))
 ```
-Также была предусмотрена проверка того, что сохранение и замена весов на Яндекс Диске происходила только в том случае, когда значение PNSR было больше, чем существующее.
+#### DBPN - Deep Back-Projection Networks For Super-Resolution (2018 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DBPN.PNG" width="400">
+Программный код нейронной сети DBPN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1803.02735 <br>
+
+#### DRCN - Deeply-Recursive Convolutional Network for Image Super-Resolution (2015 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DRCN.PNG" width="400">
+Программный код нейронной сети DRCN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1511.04491 <br>
+
+#### EDSR - Enhanced Deep Residual Networks (2017 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/EDSR.PNG" width="400">
+Программный код нейронной сети EDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
+
+#### FSRCNN - Fast Super-Resolution Convolutional Neural Network (2016 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/FSRCNN.PNG" width="400">
+Программный код нейронной сети FSRCNN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1608.00367 <br>
+
+#### SRCNN - Super-Resolution Convolutional Neural Network (2015 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SRCNN.PNG" width="400">
+Программный код нейронной сети SRCNN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1501.00092 <br>
+
+#### SRGAN - Super-Resolution Using a Generative Adversarial Network (в основе генеративно-состязательная сеть GAN, 2017 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SRGAN.png" width="600">
+Программный код нейронной сети SRGAN: https://github.com/kivirciks/super-resolution/blob/main/train_srgan.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1802.08797
+
+#### SubPixelCNN - Efficient Sub-Pixel Convolutional Neural Network (2016 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SUB.PNG" width="400">
+Программный код нейронной сети SubPixelCNN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1609.05158 <br>
+
+#### VDSR - Very Deep Convolutional Networks (2015 год)
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/VDSR.PNG" width="400">
+Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Основано на идее из статьи: https://arxiv.org/abs/1511.04587 <br>
+
+Также была предусмотрена проверка того, что сохранение и замена весов на происходило только в том случае, когда значение PNSR было больше, чем существующее.
 ```python
     # Сканирует папку с весами и удаляет все, кроме:
     # - max_best новейшие «лучшие» веса
     # - max_n_weights самые последние веса "других"
     def _remove_old_weights(self, max_n_weights, max_best=5):
         w_list = {}
-        w_list['all'] = [w for w in self.callback_paths['weights'].iterdir() if '.hdf5' in w.name]
+        w_list['all'] = [w for w in self.callback_paths['weights'].iterdir() if '.pth' in w.name]
         w_list['best'] = [w for w in w_list['all'] if 'best' in w.name]
         w_list['others'] = [w for w in w_list['all'] if w not in w_list['best']]
-        # remove older best
+        # удаление весов, которые хуже
         epochs_set = {}
         epochs_set['best'] = list(
             set([self.epoch_n_from_weights_name(w.name) for w in w_list['best']])
@@ -140,48 +180,8 @@ model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h
                         w.unlink()
 ```
 
-#### DBPN - Very Deep Convolutional Networks (в основе сверточная нейронная сеть CNN, 2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DBPN.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
-#### DRCN - Very Deep Convolutional Networks (в основе сверточная нейронная сеть CNN, 2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DRCN.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
-#### EDSR - Enhanced Deep Residual Networks (в основе сверточная нейронная сеть CNN, 2017 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/EDSR.PNG" width="400">
-Программный код нейронной сети EDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
-#### FSRCNN - Very Deep Convolutional Networks (в основе сверточная нейронная сеть CNN, 2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/RSRCNN.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
-#### SRCNN - Very Deep Convolutional Networks (в основе сверточная нейронная сеть CNN, 2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SRCNN.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
-#### SRGAN - Super-Resolution Using a Generative Adversarial Network (в основе генеративно-состязательная сеть GAN, 2017 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SRGAN.png" width="600">
-Программный код нейронной сети SRGAN: https://github.com/kivirciks/super-resolution/blob/main/train_srgan.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1802.08797
-
-#### SubPixelCNN - Very Deep Convolutional Networks (в основе сверточная нейронная сеть CNN, 2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SUB.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
-#### VDSR - Very Deep Convolutional Networks (в основе сверточная нейронная сеть CNN, 2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/VDSR.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
-
 ### Часть 5. Выбор оптимальной модели
-Для сравнения работы нейронных сетей будет использоваться параметр PNSR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
+Для сравнения работы нейронных сетей будет использоваться параметр PSNR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/PNSR.PNG" width="300">
 ```python
 # Оценка значения PSNR: PSNR = 20 * log10(MAXp) - 10 * log10(MSE)
@@ -210,8 +210,16 @@ with open('metrics.txt', 'w') as f:
     f.write("\n")
     f.write(f"vdsr PSNR: {vdsr_report}")
 ```
-
-Также с помощью '%%time' была измерена скорость преобразования Super-Resolution одной цветной и одной черно-белой фотографии для каждой модели.
+Аналогично для скорости преобразования черно-белых и цветных изображений, речь о которых пойдет ниже (metrics_black_photo.txt и metrics_color_photo.txt). <br>
+Для дополнительной оценки моделей была измерена скорость преобразования Super-Resolution одной цветной и одной черно-белой фотографии.
+```python
+import time 
+start = time.time() ## точка отсчета времени
+...
+end = time.time() - start ## собственно время работы программы
+print(end) ## вывод времени
+```
+Часть программного кода, отвечающая за преобразование Super-Resolution:
 ```python
 out = model(data)
 out = out.cpu()
@@ -227,7 +235,7 @@ out_img = Image.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB
 out_img.save(args.output)
 print('output image saved to ', args.output)
 ```
-
+Однако при решении задачи Super-Resolution не столько важны скорость обработки (в нашем случае выбивается только SRGAN, однако минута на обработку также приемлема), сколько качество итогового изображения. Поэтому автором была выставлена экспертная оценка полученному изображению. В выборе модели для развертывания при подсчете итоговый балл будет умножаться на экспертный коэффициент, который может быть от 2 до 10. Для оценки полученные фотографии проранжируются по "привлекательности" для глаза. Балл по группе (черно-белые илицветные) повторяться не может.
 Итоговые значения представлены ниже.
 <table border="1">
    <tr>
@@ -235,11 +243,13 @@ print('output image saved to ', args.output)
     <th>PNSR, dB</th>
     <th>Время обработки цветной фотографии</th>
     <th>Время обработки черно-белой фотографии</th>
+    <th>Время обработки черно-белой фотографии</th> 
    </tr>
    <tr>
     <th>DBPN</th>
     <th>00.0000</th>
     <th>Время обработки цветной фотографии</th>
+    <th>Время обработки черно-белой фотографии</th>
     <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
@@ -247,40 +257,52 @@ print('output image saved to ', args.output)
     <th>-206.4104</th>
     <th>Время обработки цветной фотографии</th>
     <th>Время обработки черно-белой фотографии</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
     <th>EDSR</th>
     <th>8.9392</th>
     <th>5.749220848083496</th>
     <th>7.394894599914551</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
     <th>FSRCNN</th>
     <th>23.6084</th>
     <th>0.6419787406921387</th>
     <th>0.8607726097106934</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
     <th>SRCNN</th>
     <th>23.0745</th>
     <th>0.5174150466918945</th>
     <th>0.5501530170440674</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
     <th>SRGAN</th>
     <th>20.9873</th>
     <th>42.673673152923584</th>
     <th>49.49873065948486</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
     <th>SubPixelCNN</th>
     <th>22.4866</th>
     <th>0.828690767288208</th>
     <th>0.6773681640625</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
    <tr>
     <th>VDSR</th>
     <th>0.9105465412139893</th>
     <th>0.7319796085357666</th>
+    <th>Время обработки черно-белой фотографии</th>
    </tr>
  </table>
+ 
+ 
+### Часть 6. Развертывание
+Для сравнения работы нейронных сетей будет использоваться параметр PSNR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/PNSR.PNG" width="300">
