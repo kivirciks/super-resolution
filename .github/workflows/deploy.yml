@@ -5,8 +5,5 @@ jobs:
   Super-Resolution:
       runs-on: self-hosted
       steps:
-        - name: cache dependencies
-          id: cache-dependencies
-          uses: actions/cache@v3
         - name: transformation
-          run: python super_resolve.py
+          run: python "C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\super_resolve.py"
