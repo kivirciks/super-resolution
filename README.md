@@ -112,10 +112,6 @@ y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_
 # Сохранение весов
 model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h5'))
 ```
-#### DBPN - Deep Back-Projection Networks For Super-Resolution (2018 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DBPN.PNG" width="400">
-Программный код нейронной сети DBPN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1803.02735 <br>
 
 #### DRCN - Deeply-Recursive Convolutional Network for Image Super-Resolution (2015 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DRCN.PNG" width="400">
@@ -179,7 +175,12 @@ model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h
                     if self.epoch_n_from_weights_name(w.name) not in epoch_list:
                         w.unlink()
 ```
-
+В дополнении, была предусмотрена возможность дообучения модели, веса которой уже сохранены:
+```python
+from keras.models import save_model, load_model
+model = load_model(model_path.pth)
+model.fit(new_x_train, new_y_train, ...)
+```
 ### Часть 5. Выбор оптимальной модели
 Для сравнения работы нейронных сетей будет использоваться параметр PSNR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/PNSR.PNG" width="300">
@@ -243,65 +244,102 @@ print('output image saved to ', args.output)
     <th>PNSR, dB</th>
     <th>Время обработки цветной фотографии</th>
     <th>Время обработки черно-белой фотографии</th>
-    <th>Время обработки черно-белой фотографии</th> 
-   </tr>
-   <tr>
-    <th>DBPN</th>
-    <th>00.0000</th>
-    <th>Время обработки цветной фотографии</th>
-    <th>Время обработки черно-белой фотографии</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>Экспертная оценка</th> 
    </tr>
    <tr>
     <th>DRCN</th>
-    <th>-206.4104</th>
-    <th>Время обработки цветной фотографии</th>
-    <th>Время обработки черно-белой фотографии</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>-284.1426</th>
+    <th>None</th>
+    <th>None</th>
+    <th>None</th>
    </tr>
    <tr>
     <th>EDSR</th>
     <th>8.9392</th>
     <th>5.749220848083496</th>
     <th>7.394894599914551</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>4</th>
    </tr>
    <tr>
     <th>FSRCNN</th>
     <th>23.6084</th>
     <th>0.6419787406921387</th>
     <th>0.8607726097106934</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>2</th>
    </tr>
    <tr>
     <th>SRCNN</th>
     <th>23.0745</th>
     <th>0.5174150466918945</th>
     <th>0.5501530170440674</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>9</th>
    </tr>
    <tr>
     <th>SRGAN</th>
     <th>20.9873</th>
     <th>42.673673152923584</th>
     <th>49.49873065948486</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>7</th>
    </tr>
    <tr>
     <th>SubPixelCNN</th>
     <th>22.4866</th>
     <th>0.828690767288208</th>
     <th>0.6773681640625</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>10</th>
    </tr>
    <tr>
     <th>VDSR</th>
+    <th>23.5409</th>
     <th>0.9105465412139893</th>
     <th>0.7319796085357666</th>
-    <th>Время обработки черно-белой фотографии</th>
+    <th>1</th>
    </tr>
  </table>
  
+ Примеры работы нейронной сети:
+ <table border="1">
+   <tr>
+    <th>Модель</th>
+    <th>Цветное изображение</th>
+    <th>Черно-белое изображение</th>
+   </tr>
+   <tr>
+    <th>DRCN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_DRCN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_DRCN.PNG" width="200"></th>
+   </tr>
+   <tr>
+    <th>EDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_EDSR.PNG)" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_EDSR.PNG" width="200"></th>
+   </tr>
+   <tr>
+    <th>FSRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_FSRCNN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_FSRCNN.PNG" width="200"></th>
+   </tr>
+   <tr>
+    <th>SRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRCNN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRCNN.PNG" width="200"></th>
+   </tr>
+   <tr>
+    <th>SRGAN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRGAN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRGAN.PNG" width="200"></th>
+   </tr>
+   <tr>
+    <th>SubPixelCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SUB.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SUB.PNG" width="200"></th>
+   </tr>
+   <tr>
+    <th>VDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_VDSR.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_VDSR.PNG" width="200"></th>
+   </tr>
+ </table>
  
 ### Часть 6. Развертывание
 Для сравнения работы нейронных сетей будет использоваться параметр PSNR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
