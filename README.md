@@ -115,32 +115,32 @@ model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h
 
 #### EDSR - Enhanced Deep Residual Networks (2017 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/EDSR.PNG" width="400">
-Программный код нейронной сети EDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Программный код нейронной сети EDSR: https://github.com/kivirciks/super-resolution/tree/main/Models/EDSR<br>
 Основано на идее из статьи: https://arxiv.org/abs/1707.02921 <br>
 
 #### FSRCNN - Fast Super-Resolution Convolutional Neural Network (2016 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/FSRCNN.PNG" width="400">
-Программный код нейронной сети FSRCNN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Программный код нейронной сети FSRCNN: https://github.com/kivirciks/super-resolution/tree/main/Models/FSRCNN<br>
 Основано на идее из статьи: https://arxiv.org/abs/1608.00367 <br>
 
 #### SRCNN - Super-Resolution Convolutional Neural Network (2015 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SRCNN.PNG" width="400">
-Программный код нейронной сети SRCNN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Программный код нейронной сети SRCNN: https://github.com/kivirciks/super-resolution/tree/main/Models/SRCNN <br>
 Основано на идее из статьи: https://arxiv.org/abs/1501.00092 <br>
 
 #### SRGAN - Super-Resolution Using a Generative Adversarial Network (в основе генеративно-состязательная сеть GAN, 2017 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SRGAN.png" width="600">
-Программный код нейронной сети SRGAN: https://github.com/kivirciks/super-resolution/blob/main/train_srgan.py <br>
+Программный код нейронной сети SRGAN: https://github.com/kivirciks/super-resolution/tree/main/Models/SRGAN <br>
 Основано на идее из статьи: https://arxiv.org/abs/1802.08797
 
 #### SubPixelCNN - Efficient Sub-Pixel Convolutional Neural Network (2016 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/SUB.PNG" width="400">
-Программный код нейронной сети SubPixelCNN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Программный код нейронной сети SubPixelCNN: https://github.com/kivirciks/super-resolution/tree/main/Models/SubPixelCNN<br>
 Основано на идее из статьи: https://arxiv.org/abs/1609.05158 <br>
 
 #### VDSR - Very Deep Convolutional Networks (2015 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/VDSR.PNG" width="400">
-Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
+Программный код нейронной сети VDSR: https://github.com/kivirciks/super-resolution/tree/main/Models/VDSR <br>
 Основано на идее из статьи: https://arxiv.org/abs/1511.04587 <br>
 
 Также была предусмотрена проверка того, что сохранение и замена весов на происходило только в том случае, когда значение PNSR было больше, чем существующее.
