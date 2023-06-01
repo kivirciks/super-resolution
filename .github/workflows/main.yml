@@ -1,0 +1,172 @@
+name: MainWorkflow
+on: [workflow_dispatch]
+jobs:
+  Start:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+
+  EDSR:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model an save result
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m edsr
+
+  FSRCNN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model an save result
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m fsrcnn
+
+  SRCNN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model an save result
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m srcnn
+        
+  SRGAN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model an save result
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m srgan
+
+  SubPixelCNN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model an save result
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m sub
+        
+  VDSR:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model an save result
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m vdsr
+        
+  EvalTree:
+    runs-on: ubuntu-latest
+    needs: TrainTree
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py "tree"
+
+  EvalKNN:
+    runs-on: ubuntu-latest
+    needs: TrainKNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py "knn"
+
+  EvalNN:
+    runs-on: self-hosted
+    needs: TrainNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: conda activate CV_screening; python evaluate_model.py "nn"
+
+  EvalQuantizedNN:
+    runs-on: self-hosted
+    needs: QuantizeNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: conda activate CV_screening; python evaluate_model.py "tflight"
+
+  SelectModel:
+    runs-on: ubuntu-latest
+    needs: [EvalTree, EvalKNN, EvalNN, EvalQuantizedNN]
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python model_selection.py
+
+  DeployModel:
+    runs-on: self-hosted
+    needs: SelectModel
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: deploy model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python update_server.py
