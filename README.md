@@ -145,9 +145,9 @@ model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h
 
 Также была предусмотрена проверка того, что сохранение и замена весов на происходило только в том случае, когда значение PNSR было больше, чем существующее.
 ```python
-    # Сканирует папку с весами и удаляет все, кроме:
-    # - max_best новейшие «лучшие» веса
-    # - max_n_weights самые последние веса "других"
+    # Сканирует папку с весами и удаляет всё, что хуже:
+    # - max_best лучшие веса модели
+    # - max_n_weights новые веса, которые будут сравниваться с лучшими
     def _remove_old_weights(self, max_n_weights, max_best=5):
         w_list = {}
         w_list['all'] = [w for w in self.callback_paths['weights'].iterdir() if '.pth' in w.name]
@@ -170,7 +170,7 @@ model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h
                     if self.epoch_n_from_weights_name(w.name) not in epoch_list:
                         w.unlink()
 ```
-В дополнении, была предусмотрена возможность дообучения модели, веса которой уже сохранены:
+В дополнении, была предусмотрена возможность дообучения модели:
 ```python
 from keras.models import save_model, load_model
 model = load_model(model_path.pth)
@@ -190,10 +190,6 @@ def PSNR(y_true, y_pred, MAXp=1):
 Каждое обучение длилось по 20 эпох, 200 шагов в каждом. Значение PNSR записывалось в файл metrics.txt:
 ```python
 with open('metrics.txt', 'w') as f:
-    f.write(f"dbpn PSNR: {dbpn_report}")
-    f.write("\n")
-    f.write(f"drcn PSNR: {drcn_report}")
-    f.write("\n")
     f.write(f"edsr PSNR: {edsr_report}")
     f.write("\n")
     f.write(f"fsrcnn PSNR: {fsrcnn_report}")
