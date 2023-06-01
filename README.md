@@ -331,6 +331,18 @@ print('output image saved to ', args.output)
 for i in model:
   final = ((PNSR * 0.5) +  (Color * 0.3) + (Black * 0.2) * coef
 ```
+Затем сортируем финальный балл и впоследствии выбираем первый в списке:
+```python
+    # сортировка
+    a = []
+    for i in range(final):
+    print(a)
+    for i in range(final-1):
+        for j in range(final-i-1):
+            if a[j] > a[j+1]:
+                a[j], a[j+1] = a[j+1], a[j]
+    print(a)
+```
 ### Часть 6. Развертывание
 Для процесса SR был разработан скрипт Super-Resolve, который запускается локально:
 ```python
