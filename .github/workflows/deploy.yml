@@ -5,7 +5,7 @@ jobs:
   Super-Resolution:
       runs-on: self-hosted
       steps:
-        #- name: evaluating
+        - name: evaluating
         #  run: python metrics.py
         - name: transformation
           run: python super_resolve.py
