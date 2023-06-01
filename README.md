@@ -310,7 +310,7 @@ print('output image saved to ', args.output)
    <tr>
     <th>SRGAN</th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRGAN.jpg" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRGAN_Generator.jpg.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRGAN.jpg" width="200"></th>
    </tr>
    <tr>
     <th>SubPixelCNN</th>
@@ -324,7 +324,7 @@ print('output image saved to ', args.output)
    </tr>
  </table>
  
- **Алгоритм выбора лучшей модели:
+ **Алгоритм выбора лучшей модели:**
  1. Значимость метрик PNSR, скорости обработки цветной фотографии и черно-белой составило 50%, 30% и 20% соответственно.
  2. Сортировка значений PNSR от большего к меньшему. Первому начисляется 6 баллов, последнему - 1. Балл умножался на 0,5 (вес критерия 50%).
  3. Сортировка скорости обработки цветного изображения от меньшего к большему. Первому начисляется 6 баллов, последнему - 1. Балл умножается на 0,3 (вес критерия 30%).
