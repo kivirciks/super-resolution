@@ -22,18 +22,18 @@ jobs:
 #          DB_PASSWORD: ${{secrets.DBPASSWORD}}
 #        run: python main.py -m edsr
 
-  FSRCNN:
-    runs-on: self-hosted
-    needs: Start
-    steps:
-      - name: checkout repo content
-        uses: actions/checkout@v3
-      - name: train model and save result
-        working-directory: ./Models
-        env:
-          DB_USERNAME: github
-          DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python main.py -m fsrcnn
+#  FSRCNN:
+#    runs-on: self-hosted
+#    needs: Start
+#    steps:
+#      - name: checkout repo content
+#        uses: actions/checkout@v3
+#      - name: train model and save result
+#        working-directory: ./Models
+#        env:
+#          DB_USERNAME: github
+#          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+#        run: python main.py -m fsrcnn
 
   SRCNN:
     runs-on: self-hosted
@@ -61,18 +61,18 @@ jobs:
   #        DB_PASSWORD: ${{secrets.DBPASSWORD}}
   #      run: python main.py -m srgan
 
-  SubPixelCNN:
-    runs-on: self-hosted
-    needs: Start
-    steps:
-      - name: checkout repo content
-        uses: actions/checkout@v3
-      - name: train model and save result
-        working-directory: ./Models
-        env:
-          DB_USERNAME: github
-          DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python main.py -m sub
+  #SubPixelCNN:
+  #  runs-on: self-hosted
+  #  needs: Start
+  #  steps:
+  #    - name: checkout repo content
+  #      uses: actions/checkout@v3
+  #    - name: train model and save result
+  #      working-directory: ./Models
+  #      env:
+  #        DB_USERNAME: github
+  #        DB_PASSWORD: ${{secrets.DBPASSWORD}}
+  #      run: python main.py -m sub
         
   #VDSR:
   #  runs-on: self-hosted
@@ -123,7 +123,7 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: install yadisk
+      - name: install yandex disk
         run: pip install yadisk
       - name: eval model
         working-directory: ./Models
