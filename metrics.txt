@@ -1,0 +1,7 @@
+edsr PSNR: 8.9392
+fsrcnn PSNR: 23.6084
+srcnn PSNR: 23.0745
+srgan PSNR: 20.9873
+sub PSNR: 22.4866
+vdsr PSNR: 23.5409
+
