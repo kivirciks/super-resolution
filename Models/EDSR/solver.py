@@ -82,8 +82,3 @@ class EDSRTrainer(object):
             self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save()
-
-import yadisk
-y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
-# Сохранение весов
-model_edsr.save_weights(y.upload('EDSR_model_path.pth', '/weights_dir/EDSR_model_path.pth'))
