@@ -327,7 +327,17 @@ print('output image saved to ', args.output)
  4. Сортировка скорости обработки черно-белого изображения от меньшего к большему. Первому начисляется 6 баллов, последнему - 1. Балл умножается на 0,2 (вес критерия 20%).
  5. Суммируется значение 2, 3 и 4 пунктов и умножается на экспертный коэффициент.
  6. Веса модели с большим итоговым баллом берутся для развертывания.
- 
+```python
+for i in model:
+  final = ((PNSR * 0.5) +  (Color * 0.3) + (Black * 0.2) * coef
+```
 ### Часть 6. Развертывание
-Для сравнения работы нейронных сетей будет использоваться параметр PSNR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/PNSR.PNG" width="300">
+Для процесса SR был разработан скрипт Super-Resolve, который запускается локально:
+```python
+parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
+parser.add_argument('--input', type=str, required=False, default=(r'C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\small_image.jpg'), help='input image to use')
+parser.add_argument('--model', type=str, default=(r'best_model'), help='model file to use')
+parser.add_argument('--output', type=str, default='test.jpg', help='where to save the output image')
+args = parser.parse_args()
+print(args)
+```
