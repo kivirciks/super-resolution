@@ -86,4 +86,4 @@ class SRCNNTrainer(object):
 import yadisk
 y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
 # Сохранение весов
-model_srcnn.save_weights(y.upload('SRCNN_model_path.pth', '/weights_dir/SRCNN_model_path.pth'))
+save_model.save_weights(y.upload('SRCNN_model_path.pth', '/weights_dir/SRCNN_model_path.pth'))
