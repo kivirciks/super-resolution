@@ -1,13 +1,13 @@
 from __future__ import print_function
 
 from math import log10
+import yadisk
 
 import torch
 import torch.backends.cudnn as cudnn
 
 from SRCNN.model import Net
 from progress_bar import progress_bar
-
 
 class SRCNNTrainer(object):
     def __init__(self, config, training_loader, testing_loader):
@@ -41,8 +41,13 @@ class SRCNNTrainer(object):
 
     def save_model(self):
         model_out_path = "model_path.pth"
-        torch.save(self.model, model_out_path)
+        y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
+        y.upload(torch.save(self.model, model_out_path))        
         print("Checkpoint saved to {}".format(model_out_path))
+        
+
+# Сохранение весов
+#torch.save(y.upload('SRCNN_model_path.pth', '/weights_dir/SRCNN_model_path.pth'))
 
     def train(self):
         self.model.train()
@@ -82,8 +87,3 @@ class SRCNNTrainer(object):
             self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save_model()
-
-import yadisk
-y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
-# Сохранение весов
-torch.save(y.upload('SRCNN_model_path.pth', '/weights_dir/SRCNN_model_path.pth'))
