@@ -2,25 +2,18 @@ name: deploy
 run-name: deploying model for ${{ github.actor }}
 on: [push]
 jobs:
-  deploy-linear-svm:
+  Super-Resolution:
       runs-on: self-hosted
       steps:
         - name: cache dependencies
           id: cache-dependencies
           uses: actions/cache@v3
           with:
-            path: /home/runner/work/_temp/Library
+            path: C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\
             key:  dependencies-v4
 
         - name: checkout repo
           uses: actions/checkout@master  # cwd: /home/runner/work/ahri/ahri
-
-        - name: cache embeddings
-          id: cache-embeddings
-          uses: actions/cache@v3
-          with:
-            path: assets/pmi-word-vectors.csv
-            key: embeddings
 
         - name: setup r environment
           uses: r-lib/actions/setup-r@v2
@@ -29,8 +22,8 @@ jobs:
           uses: actions/download-artifact@v3
           with:
             name: trained-linear-svm
-            path: assets/models
+            run: C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\super_resolve.py
 
-        - name: deploy linear svm classifier
-          if: ${{ false }}  # set to true to enable an actual deployment which will suspend the runner
-          run: ./ahri/rest.r -v assets/pmi-word-vectors.csv -m assets/models/weights.svmLinear.rds
+        #- name: deploy super-resolution model
+        #  if: ${{ false }}  # set to true to enable an actual deployment which will suspend the runner
+        #  run: ./ahri/rest.r -v assets/pmi-word-vectors.csv -m assets/models/weights.svmLinear.rds
