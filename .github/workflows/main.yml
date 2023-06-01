@@ -16,7 +16,7 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: train model and save result
-        working-directory: ./src
+        working-directory: ./Models
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
@@ -29,7 +29,7 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: train model and save result
-        working-directory: ./src
+        working-directory: ./Models
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
@@ -42,7 +42,7 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: train model and save result
-        working-directory: ./src
+        working-directory: ./Models
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
@@ -55,7 +55,7 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: train model and save result
-        working-directory: ./src
+        working-directory: ./Models
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
@@ -68,7 +68,7 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: train model and save result
-        working-directory: ./src
+        working-directory: ./Models
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
@@ -81,7 +81,7 @@ jobs:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: train model and save result
-        working-directory: ./src
+        working-directory: ./Models
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
