@@ -8,22 +8,5 @@ jobs:
         - name: cache dependencies
           id: cache-dependencies
           uses: actions/cache@v3
-          with:
-            path: C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\
-            key:  dependencies-v4
-
-        - name: checkout repo
-          uses: actions/checkout@master  # cwd: /home/runner/work/ahri/ahri
-
-        - name: setup r environment
-          uses: r-lib/actions/setup-r@v2
-
-        - name: pull trained model
-          uses: actions/download-artifact@v3
-          with:
-            name: trained-linear-svm
-            run: C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\super_resolve.py
-
-        #- name: deploy super-resolution model
-        #  if: ${{ false }}  # set to true to enable an actual deployment which will suspend the runner
-        #  run: ./ahri/rest.r -v assets/pmi-word-vectors.csv -m assets/models/weights.svmLinear.rds
+        - name: transformation
+          run: python super_resolve.py
