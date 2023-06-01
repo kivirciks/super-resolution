@@ -113,11 +113,6 @@ y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_
 model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h5'))
 ```
 
-#### DRCN - Deeply-Recursive Convolutional Network for Image Super-Resolution (2015 год)
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/DRCN.PNG" width="400">
-Программный код нейронной сети DRCN: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
-Основано на идее из статьи: https://arxiv.org/abs/1511.04491 <br>
-
 #### EDSR - Enhanced Deep Residual Networks (2017 год)
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/EDSR.PNG" width="400">
 Программный код нейронной сети EDSR: https://github.com/kivirciks/super-resolution/blob/main/train_edsr.py <br>
@@ -247,13 +242,6 @@ print('output image saved to ', args.output)
     <th>Экспертная оценка</th> 
    </tr>
    <tr>
-    <th>DRCN</th>
-    <th>-284.1426</th>
-    <th>None</th>
-    <th>None</th>
-    <th>None</th>
-   </tr>
-   <tr>
     <th>EDSR</th>
     <th>8.9392</th>
     <th>5.749220848083496</th>
@@ -305,41 +293,44 @@ print('output image saved to ', args.output)
     <th>Черно-белое изображение</th>
    </tr>
    <tr>
-    <th>DRCN</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_DRCN.PNG" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_DRCN.PNG" width="200"></th>
-   </tr>
-   <tr>
     <th>EDSR</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_EDSR.PNG)" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_EDSR.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_EDSR.jpg" width="200"></th>
    </tr>
    <tr>
     <th>FSRCNN</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_FSRCNN.PNG" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_FSRCNN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_FSRCNN.jpg" width="200"></th>
    </tr>
    <tr>
     <th>SRCNN</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRCNN.PNG" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRCNN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRCNN.jpg" width="200"></th>
    </tr>
    <tr>
     <th>SRGAN</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRGAN.PNG" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRGAN.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRGAN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SRGAN_Generator.jpg.jpg" width="200"></th>
    </tr>
    <tr>
     <th>SubPixelCNN</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SUB.PNG" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SUB.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_SUB.jpg" width="200"></th>
    </tr>
    <tr>
     <th>VDSR</th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_VDSR.PNG" width="200"></th>
-    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_VDSR.PNG" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_VDSR.jpg" width="200"></th>
    </tr>
  </table>
+ 
+ **Алгоритм выбора лучшей модели:
+ 1. Значимость метрик PNSR, скорости обработки цветной фотографии и черно-белой составило 50%, 30% и 20% соответственно.
+ 2. Сортировка значений PNSR от большего к меньшему. Первому начисляется 6 баллов, последнему - 1. Балл умножался на 0,5 (вес критерия 50%).
+ 3. Сортировка скорости обработки цветного изображения от меньшего к большему. Первому начисляется 6 баллов, последнему - 1. Балл умножается на 0,3 (вес критерия 30%).
+ 4. Сортировка скорости обработки черно-белого изображения от меньшего к большему. Первому начисляется 6 баллов, последнему - 1. Балл умножается на 0,2 (вес критерия 20%).
+ 5. Суммируется значение 2, 3 и 4 пунктов и умножается на экспертный коэффициент.
+ 6. Веса модели с большим итоговым баллом берутся для развертывания.
  
 ### Часть 6. Развертывание
 Для сравнения работы нейронных сетей будет использоваться параметр PSNR - peak signal-to-noise ratio (пиковое отношение сигнала к шуму). PSNR наиболее часто используется для измерения уровня искажений при сжатии изображений. Проще всего его определить через среднеквадратичную ошибку (СКО) или MSE (англ. mean square error). <br>
