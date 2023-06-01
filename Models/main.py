@@ -4,8 +4,6 @@ import argparse
 
 from torch.utils.data import DataLoader
 
-from DBPN.solver import DBPNTrainer
-from DRCN.solver import DRCNTrainer
 from EDSR.solver import EDSRTrainer
 from FSRCNN.solver import FSRCNNTrainer
 from SRCNN.solver import SRCNNTrainer
@@ -52,12 +50,8 @@ def main():
         model = EDSRTrainer(args, training_data_loader, testing_data_loader)
     elif args.model == 'fsrcnn':
         model = FSRCNNTrainer(args, training_data_loader, testing_data_loader)
-    elif args.model == 'drcn':
-        model = DRCNTrainer(args, training_data_loader, testing_data_loader)
     elif args.model == 'srgan':
         model = SRGANTrainer(args, training_data_loader, testing_data_loader)
-    elif args.model == 'dbpn':
-        model = DBPNTrainer(args, training_data_loader, testing_data_loader)
     else:
         raise Exception("the model does not exist")
 
