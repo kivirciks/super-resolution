@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: train model an save result
+      - name: train model and save result
         working-directory: ./src
         env:
           DB_USERNAME: github
@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: train model an save result
+      - name: train model and save result
         working-directory: ./src
         env:
           DB_USERNAME: github
@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: train model an save result
+      - name: train model and save result
         working-directory: ./src
         env:
           DB_USERNAME: github
@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: train model an save result
+      - name: train model and save result
         working-directory: ./src
         env:
           DB_USERNAME: github
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: train model an save result
+      - name: train model and save result
         working-directory: ./src
         env:
           DB_USERNAME: github
@@ -80,16 +80,16 @@ jobs:
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
-      - name: train model an save result
+      - name: train model and save result
         working-directory: ./src
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python main.py -m vdsr
         
-  EvalTree:
+  Eval_EDSR:
     runs-on: ubuntu-latest
-    needs: TrainTree
+    needs: EDSR
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
@@ -100,11 +100,11 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python evaluate_model.py "tree"
+        run: python evaluate_model.py -m edsr
 
-  EvalKNN:
+  Eval_FSRCNN:
     runs-on: ubuntu-latest
-    needs: TrainKNN
+    needs: FSRCNN
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
@@ -115,43 +115,77 @@ jobs:
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python evaluate_model.py "knn"
+        run: python evaluate_model.py -m rsrcnn
 
-  EvalNN:
-    runs-on: self-hosted
-    needs: TrainNN
+  Eval_SRCNN:
+    runs-on: ubuntu-latest
+    needs: SRCNN
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
       - name: eval model
         working-directory: ./src
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: conda activate CV_screening; python evaluate_model.py "nn"
+        run: python evaluate_model.py -m srcnn
 
-  EvalQuantizedNN:
-    runs-on: self-hosted
-    needs: QuantizeNN
+  Eval_SRGAN:
+    runs-on: ubuntu-latest
+    needs: EDSR
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
       - name: eval model
         working-directory: ./src
         env:
           DB_USERNAME: github
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: conda activate CV_screening; python evaluate_model.py "tflight"
+        run: python evaluate_model.py -m srgan
+
+  Eval_SubPixelCNN:
+    runs-on: ubuntu-latest
+    needs: SubPixelCNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m sub
+
+  Eval_VDSR:
+    runs-on: ubuntu-latest
+    needs: EDSR
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install script requirements
+        run: pip install -r src/requirements.txt
+      - name: eval model
+        working-directory: ./src
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m vdsr
 
   SelectModel:
     runs-on: ubuntu-latest
-    needs: [EvalTree, EvalKNN, EvalNN, EvalQuantizedNN]
+    needs: [Eval_EDSR, Eval_FSRCNN, Eval_SRCNN, Eval_SRGAN, Eval_SubPixelCNN, Eval_VDSR]
     steps:
       - name: checkout repo content
         uses: actions/checkout@v3
       - name: install script requirements
         run: pip install -r src/requirements.txt
-      - name: eval model
+      - name: choose model
         working-directory: ./src
         env:
           DB_USERNAME: github
