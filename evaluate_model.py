@@ -6,14 +6,9 @@ def evaluate(model_name):
     connection = connect_database()
     model_id = check_model(connection, model_name, version)
     if model_id is None:
-        raise Exception("Model with name " + model_name + " and version " + str(version) + " is not exists in "
-                                                                                           "database")
-    df = download_dataset(connection, "dataset_test", int_categories=True)
-    x_test, y_test = tokenize_dataset(df)
+        raise Exception("Model with name " + model_name + " and version " + str(version) + " is not exists")
 
-    download_model(connection, model_name, "loaded.zip", version)
-    os.makedirs("loaded")
-    shutil.unpack_archive("loaded.zip", "loaded", "zip")
+    download_model(model_name)
     params = {}
     filename = "model" + models[model_name][2]
     if models[model_name][1] == "tensorflow":
@@ -41,10 +36,15 @@ def evaluate(model_name):
         coef = 7
     else:
         raise Exception("the model does not exist")
-        
-    upload_metrics(connection, accuracy, duration, model_id)
-
-    connection.close()
-for i in model:
-  final = ((PNSR * 0.5) +  (Color * 0.3) + (Black * 0.2) * coef
-           
+    for i in model:
+    final = ((PNSR * 0.5) +  (Color * 0.3) + (Black * 0.2)) * coef
+    
+    # сортировка
+    a = []
+    for i in range(final):
+    print(a)
+    for i in range(final-1):
+        for j in range(final-i-1):
+            if a[j] > a[j+1]:
+                a[j], a[j+1] = a[j+1], a[j]
+    print(a)
