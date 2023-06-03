@@ -41,8 +41,8 @@ class SRCNNTrainer(object):
 
     def save_model(self):
         model_out_path = "model_path.pth"
-        y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
-        y.upload(torch.save(self.model, model_out_path))        
+        y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")        
+        y.upload(torch.save(self.model, model_out_path), "/weights_dir/model_path.pth")    
         print("Checkpoint saved to {}".format(model_out_path))
         
 
