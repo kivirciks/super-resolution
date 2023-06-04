@@ -81,9 +81,9 @@ import base64
 #else:
 #    fix_image(r'C:\Users\n.strokova\Pictures\super-resolution\models\Dog_Color.jpg')
 
-print("Run streamlit run super-resolution-app.py"
+print("Run streamlit run super-resolution-app.py")
 print( )
-print("You can now view your Streamlit app in your browser."
+print("You can now view your Streamlit app in your browser.")
 print( )
 print("Local URL: http://localhost:8501")
 print("Network URL: http://100.117.34.150:8501")
