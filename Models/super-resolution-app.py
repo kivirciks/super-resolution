@@ -11,8 +11,6 @@ import streamlit as st
 from PIL import Image
 from io import BytesIO
 import base64
-import time
-time.sleep(15)
 
 #import sys
 #sys.argv=['']
@@ -25,7 +23,7 @@ st.write(
     ":dog: Разработано специально для дисциплины Архитектура систем ИИ. Строкова Настя, P4140"
 )
 st.sidebar.write("## Загрузка изображений :gear:")
-
+sys.exit()
 
 # Download the fixed image
 def convert_image(img):
@@ -33,6 +31,7 @@ def convert_image(img):
     img.save(buf, format="PNG")
     byte_im = buf.getvalue()
     return byte_im
+    sys.exit()
 
 
 def fix_image(upload):
@@ -76,7 +75,7 @@ def fix_image(upload):
     col2.image(fixed)
     st.sidebar.markdown("\n")
     st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
-    return (print("Sucessfully finished!"))
+    sys.exit()
 
 
 col1, col2 = st.columns(2)
@@ -88,4 +87,3 @@ else:
     fix_image(r'C:\Users\n.strokova\Pictures\super-resolution\models\Dog_Color.jpg')
 
 sys.exit()
-time.sleep(15)
