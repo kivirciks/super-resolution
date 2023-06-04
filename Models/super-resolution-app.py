@@ -11,6 +11,7 @@ import streamlit as st
 from PIL import Image
 from io import BytesIO
 import base64
+import time
 
 
 #import sys
@@ -87,3 +88,4 @@ else:
     fix_image(r'C:\Users\n.strokova\Pictures\super-resolution\models\Dog_Color.jpg')
 
 sys.exit()
+time.sleep(15)
