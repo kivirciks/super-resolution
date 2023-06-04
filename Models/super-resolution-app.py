@@ -1,4 +1,5 @@
 from __future__ import print_function
+import sys
 import argparse
 import torch
 import torch.backends.cudnn as cudnn
@@ -9,7 +10,7 @@ import streamlit as st
 from PIL import Image
 from io import BytesIO
 import base64
-import sys
+
 
 
 #import sys
