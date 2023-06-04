@@ -23,7 +23,6 @@ st.write(
     ":dog: Разработано специально для дисциплины Архитектура систем ИИ. Строкова Настя, P4140"
 )
 st.sidebar.write("## Загрузка изображений :gear:")
-sys.exit()
 
 # Download the fixed image
 def convert_image(img):
@@ -31,7 +30,6 @@ def convert_image(img):
     img.save(buf, format="PNG")
     byte_im = buf.getvalue()
     return byte_im
-    sys.exit()
 
 
 def fix_image(upload):
@@ -75,8 +73,6 @@ def fix_image(upload):
     col2.image(fixed)
     st.sidebar.markdown("\n")
     st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
-    sys.exit()
-
 
 col1, col2 = st.columns(2)
 my_upload = st.sidebar.file_uploader("Обзор изображений", type=["png", "jpg", "jpeg"])
@@ -85,5 +81,3 @@ if my_upload is not None:
     fix_image(upload=my_upload)
 else:
     fix_image(r'C:\Users\n.strokova\Pictures\super-resolution\models\Dog_Color.jpg')
-
-sys.exit()
