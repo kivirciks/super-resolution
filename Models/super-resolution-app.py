@@ -82,3 +82,5 @@ if my_upload is not None:
     fix_image(upload=my_upload)
 else:
     fix_image(r'C:\Users\n.strokova\Pictures\super-resolution\models\Dog_Color.jpg')
+
+sys.exit()
