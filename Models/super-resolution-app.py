@@ -1,5 +1,6 @@
 from __future__ import print_function
 import sys
+from sys import exit
 import argparse
 import torch
 import torch.backends.cudnn as cudnn
@@ -10,7 +11,6 @@ import streamlit as st
 from PIL import Image
 from io import BytesIO
 import base64
-
 
 
 #import sys
@@ -75,6 +75,7 @@ def fix_image(upload):
     col2.image(fixed)
     st.sidebar.markdown("\n")
     st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
+    return (print("Sucessfully finished!"))
 
 
 col1, col2 = st.columns(2)
