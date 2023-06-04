@@ -12,9 +12,9 @@ import base64
 import sys
 
 
-import sys
-sys.argv=['']
-del sys
+#import sys
+#sys.argv=['']
+#del sys
 
 st.set_page_config(layout="wide", page_title="Super-Resolution")
 
@@ -84,4 +84,4 @@ if my_upload is not None:
 else:
     fix_image(r'C:\Users\n.strokova\Pictures\super-resolution\models\Dog_Color.jpg')
 
-sys.exit()
+print(sys.exit())
