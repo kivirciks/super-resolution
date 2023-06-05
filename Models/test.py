@@ -209,11 +209,11 @@ class Net(nn.Module):
             resnet_blocks.append(ResnetBlock(base_channel, kernel=3, stride=1, padding=1))
         self.residual_layers = nn.Sequential(*resnet_blocks)
 
+        self.mid_conv = nn.Conv2d(base_channel, base_channel, kernel_size=3, stride=1, padding=1)
         # ===========================================================
         # Изменения здесь для серединных слоев
         # ===========================================================
-        prune.random_unstructured(self.input_conv, name="weight", amount=0.3)
-        self.mid_conv = nn.Conv2d(base_channel, base_channel, kernel_size=3, stride=1, padding=1)
+        prune.random_unstructured(self.mid_conv, name="weight", amount=0.3) 
 
         upscale = []
         for _ in range(int(math.log2(upscale_factor))):
