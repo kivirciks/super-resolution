@@ -18,6 +18,8 @@ jobs:
         run: pip install numpy
       - name: install torch
         run: pip install torch
+      - name: install PIL
+        run: pip install Pillow
         
       - name: training
         env:
