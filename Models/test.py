@@ -1,3 +1,4 @@
+from __future__ import print_function
 # dataset.py
 from os import listdir
 from os.path import join
@@ -261,7 +262,6 @@ class PixelShuffleBlock(nn.Module):
         return x
       
 # trainer.py
-from __future__ import print_function
 from math import log10
 import torch
 import torch.backends.cudnn as cudnn
@@ -348,7 +348,6 @@ class EDSRTrainer(object):
                 self.save()
                 
                 
-from __future__ import print_function
 import argparse
 from torch.utils.data import DataLoader
 
