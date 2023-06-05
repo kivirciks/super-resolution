@@ -18,8 +18,6 @@ jobs:
         run: pip install numpy
       - name: install torch
         run: pip install torch
-      - name: install tensorflow
-        run: pip install tensorflow
         
       - name: training
         env:
