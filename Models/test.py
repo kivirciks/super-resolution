@@ -202,7 +202,7 @@ class Net(nn.Module):
         # ===========================================================
         # Изменения здесь для входного слоя
         # ===========================================================
-        prune.random_unstructured(self.input_conv, name="weight", amount=0.6)
+        #prune.random_unstructured(self.input_conv, name="weight", amount=0.6)
         
         resnet_blocks = []
         for _ in range(num_residuals):
@@ -213,7 +213,7 @@ class Net(nn.Module):
         # ===========================================================
         # Изменения здесь для серединных слоев
         # ===========================================================
-        prune.random_unstructured(self.mid_conv, name="weight", amount=0.3) 
+        #prune.random_unstructured(self.mid_conv, name="weight", amount=0.3) 
 
         upscale = []
         for _ in range(int(math.log2(upscale_factor))):
