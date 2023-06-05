@@ -20,7 +20,7 @@ jobs:
         run: pip install torch
       - name: install PIL
         run: pip install Pillow
-       - name: install six
+      - name: install six
         run: pip install six
         
       - name: training
