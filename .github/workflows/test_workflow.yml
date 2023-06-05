@@ -1,4 +1,4 @@
-name: Main Workflow
+name: Test Workflow
 on: [workflow_dispatch]
 jobs: 
   EDSR_Training:
