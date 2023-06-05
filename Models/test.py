@@ -191,11 +191,16 @@ def format_time(seconds):
 import math
 import torch
 import torch.nn as nn
-
+import torch.nn.utils.prune as prune
+import torch.nn.functional as F
+        
 class Net(nn.Module):
     def __init__(self, num_channels, base_channel, upscale_factor, num_residuals):
         super(Net, self).__init__()
-
+        ####################
+        ### Изменения здесь
+        ####################
+        prune.random_unstructured(input_conv, name="weight", amount=0.3)
         self.input_conv = nn.Conv2d(num_channels, base_channel, kernel_size=3, stride=1, padding=1)
 
         resnet_blocks = []
@@ -266,15 +271,9 @@ from math import log10
 import torch
 import torch.backends.cudnn as cudnn
 
-import torch.nn.utils.prune as prune
-import torch.nn.functional as F
 
 class EDSRTrainer(object):
     def __init__(self, config, training_loader, testing_loader):
-        ###
-        ### Изменение здесь
-        ###
-        prune.random_unstructured(module, name="weight", amount=0.3)
         super(EDSRTrainer, self).__init__()
         self.GPU_IN_USE = torch.cuda.is_available()
         self.device = torch.device('cuda' if self.GPU_IN_USE else 'cpu')
