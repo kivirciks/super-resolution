@@ -266,9 +266,15 @@ from math import log10
 import torch
 import torch.backends.cudnn as cudnn
 
+import torch.nn.utils.prune as prune
+import torch.nn.functional as F
 
 class EDSRTrainer(object):
     def __init__(self, config, training_loader, testing_loader):
+        ###
+        ### Изменение здесь
+        ###
+        prune.random_unstructured(module, name="weight", amount=0.3)
         super(EDSRTrainer, self).__init__()
         self.GPU_IN_USE = torch.cuda.is_available()
         self.device = torch.device('cuda' if self.GPU_IN_USE else 'cpu')
