@@ -197,12 +197,13 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self, num_channels, base_channel, upscale_factor, num_residuals):
         super(Net, self).__init__()
+
+        self.input_conv = nn.Conv2d(num_channels, base_channel, kernel_size=3, stride=1, padding=1)
         ####################
         ### Изменения здесь
         ####################
-        prune.random_unstructured(input_conv, name="weight", amount=0.3)
-        self.input_conv = nn.Conv2d(num_channels, base_channel, kernel_size=3, stride=1, padding=1)
-
+        prune.random_unstructured(self.input_conv, name="weight", amount=0.3)
+        
         resnet_blocks = []
         for _ in range(num_residuals):
             resnet_blocks.append(ResnetBlock(base_channel, kernel=3, stride=1, padding=1))
