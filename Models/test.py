@@ -250,7 +250,8 @@ class ResnetBlock(nn.Module):
         self.conv1 = nn.Conv2d(num_channel, num_channel, kernel, stride, padding)
         self.conv2 = nn.Conv2d(num_channel, num_channel, kernel, stride, padding)
         self.bn = nn.BatchNorm2d(num_channel)
-        self.activation = nn.ReLU(inplace=True)
+        self.activation = nn.Sigmoid(inplace=True)
+        #self.activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
         residual = x
@@ -304,8 +305,8 @@ class EDSRTrainer(object):
             cudnn.benchmark = True
             self.criterion.cuda()
 
-        #self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(0.9, 0.999), eps=1e-8)
-        #self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)  # lr decay
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(0.9, 0.999), eps=1e-8)
+        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)  # lr decay
 
     def save(self):
         model_out_path = "EDSR_model_path.pth"
@@ -317,11 +318,11 @@ class EDSRTrainer(object):
         train_loss = 0
         for batch_num, (data, target) in enumerate(self.training_loader):
             data, target = data.to(self.device), target.to(self.device)
-            #self.optimizer.zero_grad()
+            self.optimizer.zero_grad()
             loss = self.criterion(self.model(data), target)
             train_loss += loss.item()
             loss.backward()
-            #self.optimizer.step()
+            self.optimizer.step()
             progress_bar(batch_num, len(self.training_loader), 'Loss: %.4f' % (train_loss / (batch_num + 1)))
 
         print("    Average Loss: {:.4f}".format(train_loss / len(self.training_loader)))
@@ -347,7 +348,7 @@ class EDSRTrainer(object):
             print("\n===> Epoch {} starts:".format(epoch))
             self.train()
             self.test()
-            #self.scheduler.step(epoch)
+            self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save()
                 
