@@ -307,7 +307,6 @@ class EDSRTrainer(object):
 
         #self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(0.9, 0.999), eps=1e-8)
         self.optimizer = RMSProp(learnRate=0.001, factor=0.9)
-        self.optimizer.setupOn(self, useGlobalState=True)
         #self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)  # lr decay
 
     def save(self):
@@ -350,7 +349,6 @@ class EDSRTrainer(object):
             print("\n===> Epoch {} starts:".format(epoch))
             self.train()
             self.test()
-            self.optimizer.setupOn.step(epoch)
             #self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save()
