@@ -250,8 +250,7 @@ class ResnetBlock(nn.Module):
         self.conv1 = nn.Conv2d(num_channel, num_channel, kernel, stride, padding)
         self.conv2 = nn.Conv2d(num_channel, num_channel, kernel, stride, padding)
         self.bn = nn.BatchNorm2d(num_channel)
-        self.activation = nn.ELU()
-        #self.activation = nn.ReLU(inplace=True)
+        self.activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
         residual = x
