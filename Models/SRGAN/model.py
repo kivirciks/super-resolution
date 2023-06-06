@@ -4,8 +4,8 @@ import torch.nn.functional as F
 
 
 def swish(x):
-    return x * F.sigmoid(x)
-
+    return x * nn.Tanh(x)
+    #return x * F.sigmoid(x)
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, kernel, out_channels, stride):
@@ -105,7 +105,8 @@ class Discriminator(nn.Module):
         x = swish(self.bn8(self.conv8(x)))
 
         x = self.conv9(x)
-        return torch.sigmoid(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
+        return nn.Tanh(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
+        #return torch.sigmoid(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
 
     def weight_init(self, mean=0.0, std=0.02):
         for m in self._modules:
