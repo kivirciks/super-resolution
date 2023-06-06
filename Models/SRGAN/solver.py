@@ -49,10 +49,10 @@ class SRGANTrainer(object):
             self.criterionG.cuda()
             self.criterionD.cuda()
 
-        #self.optimizerG = optim.Adam(self.netG.parameters(), lr=self.lr, betas=(0.9, 0.999))
-        #self.optimizerD = optim.SGD(self.netD.parameters(), lr=self.lr / 100, momentum=0.9, nesterov=True)
-        #self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizerG, milestones=[50, 75, 100], gamma=0.5)  # lr decay
-        #self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizerD, milestones=[50, 75, 100], gamma=0.5)  # lr decay
+        self.optimizerG = optim.Adam(self.netG.parameters(), lr=self.lr, betas=(0.9, 0.999))
+        self.optimizerD = optim.SGD(self.netD.parameters(), lr=self.lr / 100, momentum=0.9, nesterov=True)
+        self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizerG, milestones=[50, 75, 100], gamma=0.5)  # lr decay
+        self.scheduler = optim.lr_scheduler.MultiStepLR(self.optimizerD, milestones=[50, 75, 100], gamma=0.5)  # lr decay
 
     @staticmethod
     def to_data(x):
@@ -99,10 +99,10 @@ class SRGANTrainer(object):
             d_total = d_real_loss + d_fake_loss
             d_train_loss += d_total.item()
             d_total.backward()
-            #self.optimizerD.step()
+            self.optimizerD.step()
 
             # Train generator
-            #self.optimizerG.zero_grad()
+            self.optimizerG.zero_grad()
             g_real = self.netG(data)
             g_fake = self.netD(g_real)
             gan_loss = self.criterionD(g_fake, real_label)
@@ -111,7 +111,7 @@ class SRGANTrainer(object):
             g_total = mse_loss + 1e-3 * gan_loss
             g_train_loss += g_total.item()
             g_total.backward()
-            #self.optimizerG.step()
+            self.optimizerG.step()
 
             progress_bar(batch_num, len(self.training_loader), 'G_Loss: %.4f | D_Loss: %.4f' % (g_train_loss / (batch_num + 1), d_train_loss / (batch_num + 1)))
 
@@ -142,6 +142,6 @@ class SRGANTrainer(object):
             print("\n===> Epoch {} starts:".format(epoch))
             self.train()
             self.test()
-            #self.scheduler.step(epoch)
+            self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save()
