@@ -24,6 +24,8 @@ jobs:
         run: pip install Pillow
       - name: install six
         run: pip install six
+      - name: install PuzzleLib
+        run: pip install PuzzleLib
         
       - name: training
         env:
