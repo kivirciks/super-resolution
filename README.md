@@ -344,12 +344,43 @@ for i in model:
     print(a)
 ```
 ### Часть 6. Развертывание
-Для процесса SR был разработан скрипт Super-Resolve, который запускается локально:
+Для развертывания лучшей модели было написано приложение на языке Python с использованием библиотеки streamlit. <br>
+Для запуска приложения на другом компьютере следует скачать репозиторий с GitHub, перейти в папку Models и в командной строке ввести следующую команду:
 ```python
-parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
-parser.add_argument('--input', type=str, required=False, default=(r'C:\Users\n.strokova\Downloads\super-resolution-master (3)\super-resolution-master\small_image.jpg'), help='input image to use')
-parser.add_argument('--model', type=str, default=(r'best_model'), help='model file to use')
-parser.add_argument('--output', type=str, default='test.jpg', help='where to save the output image')
-args = parser.parse_args()
-print(args)
+streamlit run super-resolution-app.py
 ```
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy1.PNG" width="200">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy2.PNG" width="200">
+Для выполнения лабораторной работы был разработан интерфейс, через который пользователь может загрузить свое изображение, которое будет увеличено в размерах в 4 раза.
+```python
+def convert_image(img):
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    byte_im = buf.getvalue()
+    return byte_im
+```
+Далее загруженное изображение поступает на вход нейросети, где обрабатывается согласно лучшей модели и выводится в правой части экрана. Если пользователь не загружает изображение, то по умолчанию на экране демонстрируется увеличенное фото зенненхунда, с которым мы экспериментировали в рамках 6 лабораторной работы.
+```python
+def fix_image(upload):
+    image = Image.open(upload)
+    col1.write("Исходное изображение :camera:")
+    col1.image(image)    
+    [параметры нашей лучшей модели]
+    out = model(data)
+    out = out.cpu()
+    out_img_y = out.data[0].numpy()
+    out_img_y *= 255.0
+    out_img_y = out_img_y.clip(0, 255)
+    out_img_y = Image.fromarray(np.uint8(out_img_y[0]), mode='L')
+
+    out_img_cb = cb.resize(out_img_y.size, Image.BICUBIC)
+    out_img_cr = cr.resize(out_img_y.size, Image.BICUBIC)
+    out_img = Image.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB')
+
+    fixed = out_img
+    col2.write("Преобразованное изображение :wrench:")
+    col2.image(fixed)
+    st.sidebar.markdown("\n")
+    st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
+```
+Также присутствует возможность скачивания обработанного изображения нажатием нужной кнопки на экране.
