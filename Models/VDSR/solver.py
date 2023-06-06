@@ -38,8 +38,8 @@ class VDSRTrainer(object):
             cudnn.benchmark = True
             self.criterion.cuda()
 
-        #self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
-        #self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)
 
     def img_preprocess(self, data, interpolation='bicubic'):
         if interpolation == 'bicubic':
@@ -82,11 +82,11 @@ class VDSRTrainer(object):
         for batch_num, (data, target) in enumerate(self.training_loader):
             data = self.img_preprocess(data)  # resize input image size
             data, target = data.to(self.device), target.to(self.device)
-            #self.optimizer.zero_grad()
+            self.optimizer.zero_grad()
             loss = self.criterion(self.model(data), target)
             train_loss += loss.item()
             loss.backward()
-            #self.optimizer.step()
+            self.optimizer.step()
             progress_bar(batch_num, len(self.training_loader), 'Loss: %.4f' % (train_loss / (batch_num + 1)))
 
         print("    Average Loss: {:.4f}".format(train_loss / len(self.training_loader)))
@@ -113,6 +113,6 @@ class VDSRTrainer(object):
             print("\n===> Epoch {} starts:".format(epoch))
             self.train()
             self.test()
-            #self.scheduler.step(epoch)
+            self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save()
