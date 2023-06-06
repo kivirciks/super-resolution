@@ -349,38 +349,36 @@ for i in model:
 ```python
 streamlit run super-resolution-app.py
 ```
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy1.PNG" width="200">
-<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy2.PNG" width="200">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy1.PNG" width="500">
+<img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy2.PNG" width="500">
 Для выполнения лабораторной работы был разработан интерфейс, через который пользователь может загрузить свое изображение, которое будет увеличено в размерах в 4 раза.
 ```python
-def convert_image(img):
-    buf = BytesIO()
-    img.save(buf, format="PNG")
-    byte_im = buf.getvalue()
-    return byte_im
+    def convert_image(img):
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        byte_im = buf.getvalue()
+        return byte_im
 ```
-Далее загруженное изображение поступает на вход нейросети, где обрабатывается согласно лучшей модели и выводится в правой части экрана. Если пользователь не загружает изображение, то по умолчанию на экране демонстрируется увеличенное фото зенненхунда, с которым мы экспериментировали в рамках 6 лабораторной работы.
+Далее загруженное изображение поступает на вход нейросети, где обрабатывается согласно лучшей модели и выводится в правой части экрана. Если пользователь не загружает изображение, то по умолчанию на экране демонстрируется увеличенное фото зенненхунда, с которым мы экспериментировали в рамках 6 лабораторной работы. Предусмотрена возможность скачивания обработанного изображения, увеличенного в размерах.
 ```python
-def fix_image(upload):
-    image = Image.open(upload)
-    col1.write("Исходное изображение :camera:")
-    col1.image(image)    
-    [параметры нашей лучшей модели]
-    out = model(data)
-    out = out.cpu()
-    out_img_y = out.data[0].numpy()
-    out_img_y *= 255.0
-    out_img_y = out_img_y.clip(0, 255)
-    out_img_y = Image.fromarray(np.uint8(out_img_y[0]), mode='L')
-
-    out_img_cb = cb.resize(out_img_y.size, Image.BICUBIC)
-    out_img_cr = cr.resize(out_img_y.size, Image.BICUBIC)
-    out_img = Image.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB')
-
-    fixed = out_img
-    col2.write("Преобразованное изображение :wrench:")
-    col2.image(fixed)
-    st.sidebar.markdown("\n")
-    st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
+    def fix_image(upload):
+        image = Image.open(upload)
+        col1.write("Исходное изображение :camera:")
+        col1.image(image)    
+        [параметры нашей лучшей модели]
+        out = model(data)
+        out = out.cpu()
+        out_img_y = out.data[0].numpy()
+        out_img_y *= 255.0
+        out_img_y = out_img_y.clip(0, 255)
+        out_img_y = Image.fromarray(np.uint8(out_img_y[0]), mode='L')
+        out_img_cb = cb.resize(out_img_y.size, Image.BICUBIC)
+        out_img_cr = cr.resize(out_img_y.size, Image.BICUBIC)
+        out_img = Image.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB')
+        fixed = out_img
+        col2.write("Преобразованное изображение :wrench:")
+        col2.image(fixed)
+        st.sidebar.markdown("\n")
+        st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
 ```
-Также присутствует возможность скачивания обработанного изображения нажатием нужной кнопки на экране.
+
