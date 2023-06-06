@@ -352,6 +352,7 @@ streamlit run super-resolution-app.py
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy1.PNG" width="500">
 <img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Deploy2.PNG" width="500">
 Для выполнения лабораторной работы был разработан интерфейс, через который пользователь может загрузить свое изображение, которое будет увеличено в размерах в 4 раза.
+
 ```python
     def convert_image(img):
         buf = BytesIO()
@@ -359,7 +360,9 @@ streamlit run super-resolution-app.py
         byte_im = buf.getvalue()
         return byte_im
 ```
+
 Далее загруженное изображение поступает на вход нейросети, где обрабатывается согласно лучшей модели и выводится в правой части экрана. Если пользователь не загружает изображение, то по умолчанию на экране демонстрируется увеличенное фото зенненхунда, с которым мы экспериментировали в рамках 6 лабораторной работы. Предусмотрена возможность скачивания обработанного изображения, увеличенного в размерах.
+
 ```python
     def fix_image(upload):
         image = Image.open(upload)
@@ -381,4 +384,3 @@ streamlit run super-resolution-app.py
         st.sidebar.markdown("\n")
         st.sidebar.download_button("Скачать преобразованное изображение", convert_image(fixed), "fixed.png", "image/png")
 ```
-
