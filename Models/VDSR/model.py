@@ -14,7 +14,7 @@ class Net(nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.input_conv, name="weight", amount=0.1)
+        #prune.random_unstructured(self.input_conv, name="weight", amount=0.1)
         
         #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Sigmoid()) for _ in range(num_residuals)])
         #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.LeakyReLU()) for _ in range(num_residuals)])
