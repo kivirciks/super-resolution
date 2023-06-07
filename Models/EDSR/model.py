@@ -55,7 +55,7 @@ class ResnetBlock(nn.Module):
         self.activation = nn.Sigmoid()
         #self.activation = nn.LeakyReLU()
         #self.activation = nn.ELU()
-        #self.activation = nn.Sigmoid()
+        #self.activation = nn.Tanh()
         #self.activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
