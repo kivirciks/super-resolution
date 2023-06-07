@@ -8,10 +8,16 @@ class Net(torch.nn.Module):
 
         self.layers = torch.nn.Sequential(
             nn.Conv2d(in_channels=num_channels, out_channels=base_filter, kernel_size=9, stride=1, padding=4, bias=True),
-            nn.Tanh(),
+            nn.Sigmoid(),
+            #nn.LeakyReLU(),
+            #nn.ELU(),
+            #nn.Tanh(),
             #nn.ReLU(inplace=True),
             nn.Conv2d(in_channels=base_filter, out_channels=base_filter // 2, kernel_size=1, bias=True),
-            nn.Tanh(),
+            nn.Sigmoid(),
+            #nn.LeakyReLU(),
+            #nn.ELU(),
+            #nn.Tanh(),
             #nn.ReLU(inplace=True),
             nn.Conv2d(in_channels=base_filter // 2, out_channels=num_channels * (upscale_factor ** 2), kernel_size=5, stride=1, padding=2, bias=True),
             nn.PixelShuffle(upscale_factor)
