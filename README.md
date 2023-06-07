@@ -386,10 +386,99 @@ streamlit run super-resolution-app.py
 ```
 ### Часть 7. Оптимизация выбранной модели
 В рамках лабораторной работы будем оптимизировать работу нейронно сети по трем направлениям:
-<li>Выбор функции активации (ReLu, LeakyReLu, Tanh, Sigmoid, ELU)</li>
 <li>Выбор оптимизатора (без оптимизатора, Adam)</li>
+<li>Выбор функции активации (ReLu, LeakyReLu, Tanh, Sigmoid, ELU)</li>
 <li>Прунинг</li>
-
+<br>
+<b>Выбор оптимизатора</b>
+<table border="1">
+   <tr>
+    <th>Оптимизатор</th>
+    <th>EDSR</th>
+    <th>FSRCNN</th>
+    <th>SRCNN</th>
+    <th>SubPixelCNN</th>
+    <th>VDSR</th> 
+   </tr>
+   <tr>
+       <th colspan="6">Без оптимизатора</th>
+   </tr>
+   <tr>
+    <th>Speed, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</TD>
+   </tr>
+   <tr>
+    <th>PNSR, dB</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Color, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Black, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+       <th colspan="6">Оптимизатор Adam</th>
+   </tr>
+   <tr>
+    <th>Speed, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>PNSR, dB</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Color, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Black, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Лучший вариант</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+ </table>
 <br>
 <b>Выбор функции активации</b>
 <table border="1">
@@ -583,5 +672,95 @@ streamlit run super-resolution-app.py
     <th>ReLu</th>
     <th>ReLu</th>
     <th>ReLu</th>
+   </tr>
+ </table>
+<br>
+<b>Использование прунинга</b>
+<table border="1">
+   <tr>
+    <th>Параметр</th>
+    <th>EDSR</th>
+    <th>FSRCNN</th>
+    <th>SRCNN</th>
+    <th>SubPixelCNN</th>
+    <th>VDSR</th> 
+   </tr>
+   <tr>
+       <th colspan="6">Без прунинга</th>
+   </tr>
+   <tr>
+    <th>Speed, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</TD>
+   </tr>
+   <tr>
+    <th>PNSR, dB</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Color, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Black, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+       <th colspan="6">Прунинг 0,1</th>
+   </tr>
+   <tr>
+    <th>Speed, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>PNSR, dB</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Color, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Black, sec</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+   </tr>
+   <tr>
+    <th>Лучший вариант</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
+    <th>-</th>
    </tr>
  </table>
