@@ -26,7 +26,7 @@ class Net(torch.nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.layers, name="weight", amount=0.1)
+        #prune.random_unstructured(self.layers, name="weight", amount=0.1)
 
     def forward(self, x):
         out = self.layers(x)
