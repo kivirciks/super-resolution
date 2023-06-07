@@ -14,7 +14,7 @@ class Net(torch.nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.first_part, name="weight", amount=0.1)
+        #prune.random_unstructured(self.first_part, name="weight", amount=0.1)
 
         self.layers = []
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.Sigmoid())) 
@@ -41,7 +41,7 @@ class Net(torch.nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.mid_part, name="weight", amount=0.1)
+        #prune.random_unstructured(self.mid_part, name="weight", amount=0.1)
 
 
         # Deconvolution
