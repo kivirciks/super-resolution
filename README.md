@@ -440,35 +440,35 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>:+1: 26м 36с</th>
+    <th>3м 55с</th>
+    <th>2м 41с</th>
+    <th>:+1: 3м 2с</th>
+    <th>:+1: 49м 34с</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>8.9392</th>
+    <th>:+1: 23.6084</th>
+    <th>:+1: 23.0745</th>
+    <th>22.4866</th>
+    <th>:+1: 23.5409</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>5.7492</th>
+    <th>0.6419</th>
+    <th>0.5174</th>
+    <th>0.8286</th>
+    <th>0.9105</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>7.3948</th>
+    <th>0.8607</th>
+    <th>0.5501</th>
+    <th>0.6773</th>
+    <th>0.7319</th>
    </tr>
    <tr>
     <th>Лучший вариант</th>
@@ -690,35 +690,35 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</TD>
+    <th>:+1: 26м 36с</th>
+    <th>3м 55с</th>
+    <th>2м 41с</th>
+    <th>:+1: 3м 2с</th>
+    <th>:+1: 49м 34с</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>8.9392</th>
+    <th>:+1: 23.6084</th>
+    <th>:+1: 23.0745</th>
+    <th>22.4866</th>
+    <th>:+1: 23.5409</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>5.7492</th>
+    <th>0.6419</th>
+    <th>0.5174</th>
+    <th>0.8286</th>
+    <th>0.9105</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>7.3948</th>
+    <th>0.8607</th>
+    <th>0.5501</th>
+    <th>0.6773</th>
+    <th>0.7319</th>
    </tr>
    <tr>
        <th colspan="6">Прунинг 0,1</th>
