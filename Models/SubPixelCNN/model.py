@@ -6,8 +6,8 @@ class Net(nn.Module):
     def __init__(self, upscale_factor):
         super(Net, self).__init__()
 
-        self.relu = nn.Sigmoid()
-        #self.relu = nn.LeakyReLU()
+        #self.relu = nn.Sigmoid()
+        self.relu = nn.LeakyReLU()
         #self.relu = nn.ELU()
         #self.relu = nn.Tanh()
         #self.relu = nn.ReLU()
