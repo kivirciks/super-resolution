@@ -736,19 +736,19 @@ prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>:+1: -</th>
+    <th>:+1: 37м 25с</th>
     <th>:+1: 2м 27с</th>
     <th>:+1: 1м 7с</th>
     <th>:+1: 2м</th>
-    <th>:+1: -</th>
+    <th>40м 48с</th>
    </tr>
    <tr>
     <th>PNSR, dB</th>
-    <th>-</th>
+    <th>-11.6315</th>
     <th>22.0069</th>
     <th>:+1: 23.2615</th>
     <th>11.0217</th>
-    <th>-</th>
+    <th>23.5409</th>
    </tr>
    <tr>
     <th>Color, sec</th>
