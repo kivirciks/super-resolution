@@ -5,13 +5,13 @@ import torch.nn as nn
 class Net(nn.Module):
     def __init__(self, num_channels, base_channels, num_residuals):
         super(Net, self).__init__()
-        self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Sigmoid())
-        #self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.LeakyReLU())
+        #self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Sigmoid())
+        self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.LeakyReLU())
         #self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.ELU())
         #self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Tanh())
         #self.input_conv = nn.Sequential(nn.Conv2d(num_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.ReLU(inplace=True))        
-        self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Sigmoid()) for _ in range(num_residuals)])
-        #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.LeakyReLU()) for _ in range(num_residuals)])
+        #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Sigmoid()) for _ in range(num_residuals)])
+        self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.LeakyReLU()) for _ in range(num_residuals)])
         #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.ELU()) for _ in range(num_residuals)])
         #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.Tanh()) for _ in range(num_residuals)])
         #self.residual_layers = nn.Sequential(*[nn.Sequential(nn.Conv2d(base_channels, base_channels, kernel_size=3, stride=1, padding=1, bias=False), nn.ReLU(inplace=True)) for _ in range(num_residuals)])
