@@ -54,20 +54,20 @@ jobs:
           DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python main.py -m srcnn
         
-  SRGAN:
-    runs-on: self-hosted
-    needs: Start
-    steps:
-      - name: checkout repo content
-        uses: actions/checkout@v3
-      - name: install yandex disk
-        run: pip install yadisk
-      - name: train model and save result
-        working-directory: ./Models
-        env:
-          DB_USERNAME: github
-          DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python main.py -m srgan
+  #SRGAN:
+  #  runs-on: self-hosted
+  #  needs: Start
+  #  steps:
+  #    - name: checkout repo content
+  #      uses: actions/checkout@v3
+  #    - name: install yandex disk
+  #      run: pip install yadisk
+  #    - name: train model and save result
+  #      working-directory: ./Models
+  #      env:
+  #        DB_USERNAME: github
+  #        DB_PASSWORD: ${{secrets.DBPASSWORD}}
+  #      run: python main.py -m srgan
 
   SubPixelCNN:
     runs-on: self-hosted
