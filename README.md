@@ -405,19 +405,19 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</TD>
+    <th>27м 51с</th>
+    <th>3м 26с</th>
+    <th>2м 22с</th>
+    <th>2м 48с</th>
+    <th>46м 12с</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>4.0686</th>
+    <th>6.3574</th>
+    <th>6.0397</th>
+    <th>4.4108</th>
+    <th>23.5105</th>
    </tr>
    <tr>
     <th>Color, sec</th>
