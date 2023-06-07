@@ -1,4 +1,4 @@
-name: Sigmoid.
+name: Sigmoid
 on: [workflow_dispatch]
 jobs:
   Start:
