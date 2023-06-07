@@ -6,7 +6,11 @@ class Net(nn.Module):
     def __init__(self, upscale_factor):
         super(Net, self).__init__()
 
-        self.relu = nn.ReLU()
+        self.relu = nn.Sigmoid()
+        #self.relu = nn.LeakyReLU()
+        #self.relu = nn.ELU()
+        #self.relu = nn.Tanh()
+        #self.relu = nn.ReLU()
         self.conv1 = nn.Conv2d(1, 64, kernel_size=5, stride=1, padding=2)
         self.conv2 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1)
