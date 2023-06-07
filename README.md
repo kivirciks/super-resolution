@@ -676,6 +676,7 @@ streamlit run super-resolution-app.py
  </table>
 <br>
 <b>Использование прунинга</b>
+
 ```python
 import torch.nn.utils.prune as prune
 ...
@@ -685,6 +686,7 @@ prune.random_unstructured(self.mid_conv, name="weight", amount=0.1)
 ...
 prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
 ```
+
 <table border="1">
    <tr>
     <th>Параметр</th>
@@ -735,41 +737,41 @@ prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
    <tr>
     <th>Speed, sec</th>
     <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>2м 27с</th>
+    <th>1м 7с</th>
+    <th>2м</th>
     <th>-</th>
    </tr>
    <tr>
     <th>PNSR, dB</th>
     <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>22.0069</th>
+    <th>23.2615</th>
+    <th>11.0217</th>
     <th>-</th>
    </tr>
    <tr>
     <th>Color, sec</th>
     <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>1.298823595046997</th>
+    <th>0.8756392002105713</th>
+    <th>1.229607105255127</th>
     <th>-</th>
    </tr>
    <tr>
     <th>Black, sec</th>
     <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>1.5095970630645752</th>
+    <th>1.489630937576294</th>
+    <th>1.1397414207458496</th>
     <th>-</th>
    </tr>
    <tr>
     <th>Лучший вариант</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>Без</th>
+    <th>Без</th>
+    <th>Без</th>
+    <th>Без</th>
+    <th>Без</th>
    </tr>
  </table>
