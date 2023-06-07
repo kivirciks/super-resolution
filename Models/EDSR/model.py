@@ -3,12 +3,18 @@ import math
 import torch
 import torch.nn as nn
 
+import torch.nn.utils.prune as prune
+import torch.nn.functional as F
 
 class Net(nn.Module):
     def __init__(self, num_channels, base_channel, upscale_factor, num_residuals):
         super(Net, self).__init__()
 
         self.input_conv = nn.Conv2d(num_channels, base_channel, kernel_size=3, stride=1, padding=1)
+        # ===========================================================
+        # Изменения здесь
+        # ===========================================================
+        prune.random_unstructured(self.input_conv, name="weight", amount=0.1)
 
         resnet_blocks = []
         for _ in range(num_residuals):
@@ -16,6 +22,10 @@ class Net(nn.Module):
         self.residual_layers = nn.Sequential(*resnet_blocks)
 
         self.mid_conv = nn.Conv2d(base_channel, base_channel, kernel_size=3, stride=1, padding=1)
+        # ===========================================================
+        # Изменения здесь
+        # ===========================================================
+        prune.random_unstructured(self.mid_conv, name="weight", amount=0.1)
 
         upscale = []
         for _ in range(int(math.log2(upscale_factor))):
@@ -23,6 +33,10 @@ class Net(nn.Module):
         self.upscale_layers = nn.Sequential(*upscale)
 
         self.output_conv = nn.Conv2d(base_channel, num_channels, kernel_size=3, stride=1, padding=1)
+        # ===========================================================
+        # Изменения здесь
+        # ===========================================================
+        prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
 
     def weight_init(self, mean=0.0, std=0.02):
         for m in self._modules:
