@@ -676,6 +676,15 @@ streamlit run super-resolution-app.py
  </table>
 <br>
 <b>Использование прунинга</b>
+```python
+import torch.nn.utils.prune as prune
+...
+prune.random_unstructured(self.input_conv, name="weight", amount=0.1)
+...
+prune.random_unstructured(self.mid_conv, name="weight", amount=0.1)
+...
+prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
+```
 <table border="1">
    <tr>
     <th>Параметр</th>
