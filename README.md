@@ -667,10 +667,10 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Лучшая функция активации</th>
+    <th>Sigmoid</th>
     <th>ReLu</th>
     <th>ReLu</th>
-    <th>ReLu</th>
-    <th>ReLu</th>
+    <th>Tanh</th>
     <th>ReLu</th>
    </tr>
  </table>
