@@ -105,8 +105,8 @@ class Discriminator(nn.Module):
 
         x = self.conv9(x)
         #return torch.sigmoid(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
-        return torch.nn.LeakyReLU(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
-        #return torch.nn.ELU(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
+        #return torch.nn.LeakyReLU(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
+        return torch.nn.ELU(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
         #return torch.nn.Tanh(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
         #return torch.nn.ReLU(F.avg_pool2d(x, x.size()[2:])).view(x.size()[0], -1)
 
