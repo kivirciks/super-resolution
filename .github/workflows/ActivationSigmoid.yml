@@ -1,0 +1,203 @@
+name: Sigmoid.
+on: [workflow_dispatch]
+jobs:
+  Start:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+
+  EDSR:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install yandex disk
+        run: pip install yadisk
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m edsr
+
+  FSRCNN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install yandex disk
+        run: pip install yadisk
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m fsrcnn
+
+  SRCNN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install yandex disk
+        run: pip install yadisk
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m srcnn
+        
+  SRGAN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install yandex disk
+        run: pip install yadisk
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m srgan
+
+  SubPixelCNN:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install yandex disk
+        run: pip install yadisk
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m sub
+        
+  VDSR:
+    runs-on: self-hosted
+    needs: Start
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m vdsr
+        
+  Eval_EDSR:
+    runs-on: ubuntu-latest
+    needs: EDSR
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m edsr
+
+  Eval_FSRCNN:
+    runs-on: ubuntu-latest
+    needs: FSRCNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m rsrcnn
+
+  Eval_SRCNN:
+    runs-on: ubuntu-latest
+    needs: SRCNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m srcnn
+
+  Eval_SRGAN:
+    runs-on: ubuntu-latest
+    needs: SRGAN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m srgan
+
+  Eval_SubPixelCNN:
+    runs-on: ubuntu-latest
+    needs: SubPixelCNN
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m sub
+
+  Eval_VDSR:
+    runs-on: ubuntu-latest
+    needs: VDSR
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: eval model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python evaluate_model.py -m vdsr
+
+  SelectModel:
+    runs-on: ubuntu-latest
+    needs: [Eval_EDSR, Eval_FSRCNN, Eval_SRCNN, Eval_SRGAN, Eval_SubPixelCNN, Eval_VDSR]
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: choose model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python model_selection.py
+
+  DeployModel:
+    runs-on: self-hosted
+    needs: SelectModel
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: deploy model
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python super-resolution-app.py
+        #run: streamlit run super-resolution-app.py
