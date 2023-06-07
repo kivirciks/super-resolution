@@ -712,23 +712,23 @@ prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
     <th>8.9392</th>
     <th>:+1: 23.6084</th>
     <th>:+1: 23.0745</th>
-    <th>22.4866</th>
+    <th>:+1: 22.4866</th>
     <th>:+1: 23.5409</th>
    </tr>
    <tr>
     <th>Color, sec</th>
     <th>5.7492</th>
-    <th>0.6419</th>
-    <th>0.5174</th>
-    <th>0.8286</th>
+    <th>:+1: 0.6419</th>
+    <th>:+1: 0.5174</th>
+    <th>:+1: 0.8286</th>
     <th>0.9105</th>
    </tr>
    <tr>
     <th>Black, sec</th>
     <th>7.3948</th>
-    <th>0.8607</th>
-    <th>0.5501</th>
-    <th>0.6773</th>
+    <th>:+1: 0.8607</th>
+    <th>:+1: 0.5501</th>
+    <th>:+1: 0.6773</th>
     <th>0.7319</th>
    </tr>
    <tr>
@@ -736,17 +736,17 @@ prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>-</th>
-    <th>2м 27с</th>
-    <th>1м 7с</th>
-    <th>2м</th>
-    <th>-</th>
+    <th>:+1: -</th>
+    <th>:+1: 2м 27с</th>
+    <th>:+1: 1м 7с</th>
+    <th>:+1: 2м</th>
+    <th>:+1: -</th>
    </tr>
    <tr>
     <th>PNSR, dB</th>
     <th>-</th>
     <th>22.0069</th>
-    <th>23.2615</th>
+    <th>:+1: 23.2615</th>
     <th>11.0217</th>
     <th>-</th>
    </tr>
@@ -773,5 +773,38 @@ prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
     <th>Без</th>
     <th>Без</th>
     <th>Без</th>
+   </tr>
+ </table>
+Что делает с нами прунинг? Определенно не наш вариант, нам важен каждый пиксель
+ <table border="1">
+   <tr>
+    <th>Модель</th>
+    <th>Цветное изображение</th>
+    <th>Черно-белое изображение</th>
+   </tr>
+   <tr>
+    <th>EDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Prun_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_Prun_EDSR.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>FSRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Prun_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_Prun_FSRCNN.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>SRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Prun_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_Prun_SRCNN.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>SubPixelCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Prun_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_Prun_SUB.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>VDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Prun_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Black_Prun_VDSR.jpg" width="200"></th>
    </tr>
  </table>
