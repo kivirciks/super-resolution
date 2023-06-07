@@ -1,5 +1,7 @@
 import torch.nn as nn
 import torch.nn.init as init
+import torch.nn.utils.prune as prune
+import torch.nn.functional as F
 
 
 class Net(nn.Module):
@@ -8,13 +10,20 @@ class Net(nn.Module):
 
         #self.relu = nn.Sigmoid()
         #self.relu = nn.LeakyReLU()
-        self.relu = nn.ELU()
-        #self.relu = nn.Tanh()
+        #self.relu = nn.ELU()
+        self.relu = nn.Tanh()
         #self.relu = nn.ReLU()
         self.conv1 = nn.Conv2d(1, 64, kernel_size=5, stride=1, padding=2)
+        # ===========================================================
+        # Изменения здесь
+        # ===========================================================
+        prune.random_unstructured(self.conv1, name="weight", amount=0.1)
         self.conv2 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)
+        prune.random_unstructured(self.conv2, name="weight", amount=0.1)
         self.conv3 = nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1)
+        prune.random_unstructured(self.conv3, name="weight", amount=0.1)
         self.conv4 = nn.Conv2d(32, upscale_factor ** 2, kernel_size=3, stride=1, padding=1)
+        prune.random_unstructured(self.conv4, name="weight", amount=0.1)
         self.pixel_shuffle = nn.PixelShuffle(upscale_factor)
 
         self._initialize_weights()
