@@ -8,9 +8,9 @@ class Net(torch.nn.Module):
         super(Net, self).__init__()
         #self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.Sigmoid())
         #self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.LeakyReLU())
-        #self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.ELU())
+        self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.ELU())
         #self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.Tanh())
-        self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.PReLU())
+        #self.first_part = nn.Sequential(nn.Conv2d(in_channels=num_channels, out_channels=d, kernel_size=5, stride=1, padding=2), nn.PReLU())
         # ===========================================================
         # Изменения здесь
         # ===========================================================
@@ -19,7 +19,7 @@ class Net(torch.nn.Module):
         self.layers = []
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.Sigmoid())) 
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.LeakyReLU()))
-        #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.ELU()))
+        self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.ELU()))
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.Tanh()))
         self.layers.append(nn.Sequential(nn.Conv2d(in_channels=d, out_channels=s, kernel_size=1, stride=1, padding=0), nn.PReLU()))        
         
@@ -27,15 +27,15 @@ class Net(torch.nn.Module):
             self.layers.append(nn.Conv2d(in_channels=s, out_channels=s, kernel_size=3, stride=1, padding=1))
         #self.layers.append(nn.Sigmoid())
         #self.layers.append(nn.LeakyReLU())
-        #self.layers.append(nn.ELU())
+        self.layers.append(nn.ELU())
         #self.layers.append(nn.Tanh())
-        self.layers.append(nn.PReLU()) 
+        #self.layers.append(nn.PReLU()) 
         
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.Sigmoid()))
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.LeakyReLU()))
-        #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.ELU()))
+        self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.ELU()))
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.PReLU()))
-        self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.Tanh()))
+        #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.Tanh()))
 
         self.mid_part = torch.nn.Sequential(*self.layers)
         # ===========================================================
