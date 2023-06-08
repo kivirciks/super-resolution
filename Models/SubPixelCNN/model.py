@@ -10,8 +10,8 @@ class Net(nn.Module):
 
         #self.relu = nn.Sigmoid()
         #self.relu = nn.LeakyReLU()
-        #self.relu = nn.ELU()
-        self.relu = nn.Tanh()
+        self.relu = nn.ELU()
+        #self.relu = nn.Tanh()
         #self.relu = nn.ReLU()
         self.conv1 = nn.Conv2d(1, 64, kernel_size=5, stride=1, padding=2)
         # ===========================================================
