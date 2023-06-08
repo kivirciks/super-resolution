@@ -546,18 +546,18 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>16.88957667350769</th>
+    <th>1.144906997680664</th>
+    <th>0.778658390045166</th>
+    <th>0.687969446182251</th>
     <th>-</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>9.330363988876343 </th>
+    <th>0.8182201385498047</th>
+    <th>0.5166482925415039</th>
+    <th>0.6541745662689209</th>
     <th>-</th>
    </tr>
    <tr>
