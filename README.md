@@ -406,10 +406,10 @@ streamlit run super-resolution-app.py
    <tr>
     <th>Speed, sec</th>
     <th>27м 51с</th>
-    <th>3м 26с</th>
-    <th>2м 22с</th>
-    <th>2м 48с</th>
-    <th>46м 12с</TD>
+    <th>3м 26с :trophy:</th>
+    <th>2м 22с :trophy:</th>
+    <th>2м 48с :trophy:</th>
+    <th>46м 12с :trophy:</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
@@ -421,62 +421,95 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>27.0314</th>
+    <th>1.6284</th>
+    <th>1.0016</th>
+    <th>1.2114</th>
+    <th>1.899</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>15.1522</th>
+    <th>1.8426</th>
+    <th>0.9933</th>
+    <th>1.2163</th>
+    <th>1.9651</th>
    </tr>
    <tr>
        <th colspan="6">Оптимизатор Adam</th>
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>:+1: 26м 36с</th>
+    <th>26м 36с :trophy:</th>
     <th>3м 55с</th>
     <th>2м 41с</th>
-    <th>:+1: 3м 2с</th>
-    <th>:+1: 49м 34с</TD>
+    <th>3м 2с</th>
+    <th>49м 34с</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
     <th>8.9392</th>
-    <th>:+1: 23.6084</th>
-    <th>:+1: 23.0745</th>
-    <th>22.4866</th>
-    <th>:+1: 23.5409</th>
+    <th>23.6084 :trophy:</th>
+    <th>23.0745 :trophy:</th>
+    <th>22.4866 :trophy:</th>
+    <th>23.5409 :trophy:</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>5.7492</th>
-    <th>0.6419</th>
-    <th>0.5174</th>
-    <th>0.8286</th>
-    <th>0.9105</th>
+    <th>5.7492 :trophy:</th>
+    <th>0.6419 :trophy:</th>
+    <th>0.5174 :trophy:</th>
+    <th>0.8286 :trophy:</th>
+    <th>0.9105 :trophy:</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>7.3948</th>
-    <th>0.8607</th>
-    <th>0.5501</th>
-    <th>0.6773</th>
-    <th>0.7319</th>
+    <th>7.3948 :trophy:</th>
+    <th>0.8607 :trophy:</th>
+    <th>0.5501 :trophy:</th>
+    <th>0.6773 :trophy:</th>
+    <th>0.7319 :trophy:</th>
    </tr>
    <tr>
     <th>Лучший вариант</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>Adam</th>
+    <th>Adam</th>
+    <th>Adam</th>
+    <th>Adam</th>
+    <th>Adam</th>
+   </tr>
+ </table>
+А теперь наглядно:
+ <table border="1">
+   <tr>
+    <th>Модель</th>
+    <th>Без оптимизатора</th>
+    <th>С оптимизатором Adam</th>
+   </tr>
+   <tr>
+    <th>EDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_EDSR.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>FSRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_FSRCNN.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>SRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRCNN.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>SubPixelCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SUB.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>VDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_VDSR.jpg" width="200"></th>
    </tr>
  </table>
 <br>
