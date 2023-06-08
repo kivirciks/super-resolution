@@ -14,7 +14,7 @@ class Net(nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.input_conv, name="weight", amount=0.1)
+        #prune.random_unstructured(self.input_conv, name="weight", amount=0.1)
 
         resnet_blocks = []
         for _ in range(num_residuals):
@@ -25,7 +25,7 @@ class Net(nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.mid_conv, name="weight", amount=0.1)
+        #prune.random_unstructured(self.mid_conv, name="weight", amount=0.1)
 
         upscale = []
         for _ in range(int(math.log2(upscale_factor))):
@@ -36,7 +36,7 @@ class Net(nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
+        #prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
 
     def weight_init(self, mean=0.0, std=0.02):
         for m in self._modules:
@@ -66,10 +66,10 @@ class ResnetBlock(nn.Module):
         self.conv1 = nn.Conv2d(num_channel, num_channel, kernel, stride, padding)
         self.conv2 = nn.Conv2d(num_channel, num_channel, kernel, stride, padding)
         self.bn = nn.BatchNorm2d(num_channel)
-        self.activation = nn.Sigmoid()
+        #self.activation = nn.Sigmoid()
         #self.activation = nn.LeakyReLU()
         #self.activation = nn.ELU()
-        #self.activation = nn.Tanh()
+        self.activation = nn.Tanh()
         #self.activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
