@@ -528,35 +528,35 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>:+1: 26м 36с</th>
+    <th>26м 36с :trophy:</th>
     <th>3м 55с</th>
     <th>2м 41с</th>
-    <th>:+1: 3м 2с</th>
-    <th>:+1: 49м 34с</TD>
+    <th>3м 2с</th>
+    <th>49м 34с</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
     <th>8.9392</th>
-    <th>:+1: 23.6084</th>
-    <th>:+1: 23.0745</th>
+    <th>23.6084 :trophy:</th>
+    <th>23.0745 :trophy:</th>
     <th>22.4866</th>
-    <th>:+1: 23.5409</th>
+    <th>23.5409</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>5.7492</th>
-    <th>0.6419</th>
-    <th>0.5174</th>
+    <th>5.7492 :trophy:</th>
+    <th>0.6419 :trophy:</th>
+    <th>0.5174 :trophy:</th>
     <th>0.8286</th>
-    <th>0.9105</th>
+    <th>0.9105 :trophy:</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>7.3948</th>
+    <th>7.3948 :trophy:</th>
     <th>0.8607</th>
     <th>0.5501</th>
     <th>0.6773</th>
-    <th>0.7319</th>
+    <th>0.7319 :trophy:</th>
    </tr>
    <tr>
        <th colspan="6">Функция активации Tanh</th>
@@ -564,34 +564,34 @@ streamlit run super-resolution-app.py
    <tr>
     <th>Speed, sec</th>
     <th>30м 9с</th>
-    <th>:+1: 3м 35с</th>
-    <th>:+1: 2м 20с</th>
-    <th>3м 15с</th>
-    <th>1ч 2м</th>
+    <th>3м 35с :trophy:</th>
+    <th>2м 20с :trophy:</th>
+    <th>3м 15с :trophy:</th>
+    <th>1ч 2м :trophy:</th>
    </tr>
    <tr>
     <th>PNSR, dB</th>
     <th>7.1071</th>
     <th>13.1660</th>
     <th>11.3733</th>
-    <th>:+1: 23.8374</th>
+    <th>23.8374 :trophy:</th>
     <th>23.4811</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>16.88957667350769</th>
-    <th>1.144906997680664</th>
-    <th>0.778658390045166</th>
-    <th>0.687969446182251</th>
-    <th>-</th>
+    <th>16.8895</th>
+    <th>1.1449</th>
+    <th>0.7786</th>
+    <th>0.6879 :trophy:</th>
+    <th>1.0657</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>9.330363988876343 </th>
-    <th>0.8182201385498047</th>
-    <th>0.5166482925415039</th>
-    <th>0.6541745662689209</th>
-    <th>-</th>
+    <th>9.3303</th>
+    <th>0.8182</th>
+    <th>0.5166</th>
+    <th>0.6541 :trophy:</th>
+    <th>1.1187</th>
    </tr>
    <tr>
        <th colspan="6">Функция активации LeakyReLu</th>
@@ -610,23 +610,23 @@ streamlit run super-resolution-app.py
     <th>20.9455</th>
     <th>15.5536</th>
     <th>9.9603</th>
-    <th>-10.2944</th>
+    <th>23.9005 :trophy:</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>10.7082</th>
+    <th>1.2539</th>
+    <th>0.7025</th>
+    <th>0.8487</th>
+    <th>0.9984</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>11.0154</th>
+    <th>1.3402</th>
+    <th>0.7443</th>
+    <th>0.8548</th>
+    <th>0.8980</th>
    </tr>
    <tr>
        <th colspan="6">Функция активации ELU</th>
@@ -649,18 +649,18 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>15.0107</th>
+    <th>0.9368</th>
+    <th>0.5237</th>
+    <th>0.8202</th>
     <th>-</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>9.9320</th>
+    <th>0.8283 :trophy:</th>
+    <th>0.5086 :trophy:</th>
+    <th>0.8729</th>
     <th>-</th>
    </tr>
    <tr>
@@ -672,31 +672,31 @@ streamlit run super-resolution-app.py
     <th>5м 45с</th>
     <th>2м 21с</th>
     <th>5м 1с</th>
-    <th>-</th>
+    <th>2ч 22м</th>
    </tr>
    <tr>
     <th>PNSR, dB</th>
-    <th>:+1: 11.3932</th>
+    <th>11.3932 :trophy:</th>
     <th>13.1652</th>
     <th>17.3391</th>
     <th>10.9871</th>
-    <th>-</th>
+    <th>23.5409</th>
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>9.5319</th>
+    <th>1.1214</th>
+    <th>0.6784</th>
+    <th>0.8113</th>
+    <th>1.3976</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
-    <th>-</th>
+    <th>7.5522</th>
+    <th>1.0037</th>
+    <th>0.6229</th>
+    <th>0.8321-</th>
+    <th>1.2832</th>
    </tr>
    <tr>
     <th>Лучшая функция активации</th>
@@ -709,7 +709,57 @@ streamlit run super-resolution-app.py
  </table>
 <br>
 <b>Использование прунинга</b>
-
+ <table border="1">
+   <tr>
+    <th>Модель</th>
+    <th>ReLu</th>
+    <th>Tanh</th>
+    <th>LeakyReLu</th>
+    <th>ELU</th>
+    <th>Sigmoid</th>
+   </tr>
+   <tr>
+    <th>EDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Tanh_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_LeakyReLu_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_ELU_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Sigmoid_EDSR.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>FSRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Tanh_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_LeakyReLu_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_ELU_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Sigmoid_FSRCNN.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>SRCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Tanh_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_LeakyReLu_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_ELU_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Sigmoid_SRCNN.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>SubPixelCNN</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Tanh_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_LeakyReLu_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_ELU_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Sigmoid_SUB.jpg" width="200"></th>
+   </tr>
+   <tr>
+    <th>VDSR</th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Tanh_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_LeakyReLu_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_ELU_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_Sigmoid_VDSR.jpg" width="200"></th>
+   </tr>
+ </table>
+<br>
 ```python
 import torch.nn.utils.prune as prune
 ...
