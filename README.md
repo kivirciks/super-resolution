@@ -405,11 +405,11 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>Speed, sec</th>
-    <th>27м 51с</th>
-    <th>3м 26с :trophy:</th>
-    <th>2м 22с :trophy:</th>
-    <th>2м 48с :trophy:</th>
-    <th>46м 12с :trophy:</TD>
+    <th>27м 51с :trophy:</th>
+    <th>3м 26с</th>
+    <th>2м 22с</th>
+    <th>2м 48с</th>
+    <th>46м 12с</TD>
    </tr>
    <tr>
     <th>PNSR, dB</th>
@@ -448,7 +448,7 @@ streamlit run super-resolution-app.py
    </tr>
    <tr>
     <th>PNSR, dB</th>
-    <th>8.9392</th>
+    <th>8.9392 :trophy:</th>
     <th>23.6084 :trophy:</th>
     <th>23.0745 :trophy:</th>
     <th>22.4866 :trophy:</th>
@@ -458,17 +458,51 @@ streamlit run super-resolution-app.py
     <th>Color, sec</th>
     <th>5.7492 :trophy:</th>
     <th>0.6419 :trophy:</th>
-    <th>0.5174 :trophy:</th>
-    <th>0.8286 :trophy:</th>
-    <th>0.9105 :trophy:</th>
+    <th>0.5174</th>
+    <th>0.8286</th>
+    <th>0.9105</th>
    </tr>
    <tr>
     <th>Black, sec</th>
     <th>7.3948 :trophy:</th>
-    <th>0.8607 :trophy:</th>
-    <th>0.5501 :trophy:</th>
-    <th>0.6773 :trophy:</th>
+    <th>0.8607</th>
+    <th>0.5501</th>
+    <th>0.6773</th>
     <th>0.7319 :trophy:</th>
+   </tr>
+       <th colspan="6">Оптимизатор RMSProp</th>
+   </tr>
+   <tr>
+    <th>Speed, sec</th>
+    <th>37м 24с</th>
+    <th>2м 31с :trophy:</th>
+    <th>1м 22с :trophy:</th>
+    <th>1м 50с :trophy:</th>
+    <th>38м 49с :trophy:</TD>
+   </tr>
+   <tr>
+    <th>PNSR, dB</th>
+    <th>-14.4140</th>
+    <th>-27.2289</th>
+    <th>13.1999</th>
+    <th>5.6554</th>
+    <th>23.5409</th>
+   </tr>
+   <tr>
+    <th>Color, sec</th>
+    <th15.8326</th>
+    <th>0.6641</th>
+    <th>0.4530 :trophy:</th>
+    <th>0.5403 :trophy:</th>
+    <th>0.7503 :trophy:</th>
+   </tr>
+   <tr>
+    <th>Black, sec</th>
+    <th>9.7934</th>
+    <th>0.6798 :trophy:</th>
+    <th>0.5015 :trophy:</th>
+    <th>0.5541 :trophy:</th>
+    <th>0.7759</th>
    </tr>
    <tr>
     <th>Лучший вариант</th>
@@ -485,31 +519,37 @@ streamlit run super-resolution-app.py
     <th>Модель</th>
     <th>Без оптимизатора</th>
     <th>С оптимизатором Adam</th>
+    <th>С оптимизатором RMSProp</th> 
    </tr>
    <tr>
     <th>EDSR</th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_EDSR.jpg" width="200"></th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_EDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_RMSProp_EDSR.jpg" width="200"></th>
    </tr>
    <tr>
     <th>FSRCNN</th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_FSRCNN.jpg" width="200"></th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_FSRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_RMSProp_FSRCNN.jpg" width="200"></th>
    </tr>
    <tr>
     <th>SRCNN</th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_SRCNN.jpg" width="200"></th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SRCNN.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_RMSProp_SRCNN.jpg" width="200"></th>
    </tr>
    <tr>
     <th>SubPixelCNN</th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_SUB.jpg" width="200"></th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_SUB.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_RMSProp_SUB.jpg" width="200"></th>
    </tr>
    <tr>
     <th>VDSR</th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_No_Optim_VDSR.jpg" width="200"></th>
     <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_VDSR.jpg" width="200"></th>
+    <th><img src="https://github.com/kivirciks/super-resolution/blob/main/pictures/Photo_Color_RMSProp_VDSR.jpg" width="200"></th>
    </tr>
  </table>
 <br>
