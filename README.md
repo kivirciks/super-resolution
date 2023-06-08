@@ -874,19 +874,19 @@ prune.random_unstructured(self.output_conv, name="weight", amount=0.1)
    </tr>
    <tr>
     <th>Color, sec</th>
-    <th>-</th>
+    <th>4.4257</th>
     <th>1.298823595046997</th>
     <th>0.8756392002105713</th>
     <th>1.229607105255127</th>
-    <th>-</th>
+    <th>0.9781</th>
    </tr>
    <tr>
     <th>Black, sec</th>
-    <th>-</th>
+    <th>3.937</th>
     <th>1.5095970630645752</th>
     <th>1.489630937576294</th>
     <th>1.1397414207458496</th>
-    <th>-</th>
+    <th>0.9805</th>
    </tr>
    <tr>
     <th>Лучший вариант</th>
