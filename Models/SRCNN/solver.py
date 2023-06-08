@@ -36,11 +36,11 @@ class SRCNNTrainer(object):
             cudnn.benchmark = True
             self.criterion.cuda()
 
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
-        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)
+        #self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        #self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=[50, 75, 100], gamma=0.5)
 
     def save_model(self):
-        model_out_path = "model_path.pth"     
+        model_out_path = "SRCNN_model_path.pth"     
         torch.save(self.model, model_out_path)
         print("Checkpoint saved to {}".format(model_out_path))
         
@@ -50,11 +50,11 @@ class SRCNNTrainer(object):
         train_loss = 0
         for batch_num, (data, target) in enumerate(self.training_loader):
             data, target = data.to(self.device), target.to(self.device)
-            self.optimizer.zero_grad()
+            #self.optimizer.zero_grad()
             loss = self.criterion(self.model(data), target)
             train_loss += loss.item()
             loss.backward()
-            self.optimizer.step()
+            #self.optimizer.step()
             progress_bar(batch_num, len(self.training_loader), 'Loss: %.4f' % (train_loss / (batch_num + 1)))
 
         print("    Average Loss: {:.4f}".format(train_loss / len(self.training_loader)))
@@ -80,6 +80,6 @@ class SRCNNTrainer(object):
             print("\n===> Epoch {} starts:".format(epoch))
             self.train()
             self.test()
-            self.scheduler.step(epoch)
+            #self.scheduler.step(epoch)
             if epoch == self.nEpochs:
                 self.save_model()
