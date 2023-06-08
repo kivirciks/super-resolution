@@ -38,7 +38,7 @@ def fix_image(upload):
 
     parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
     parser.add_argument('--input', type=str, required=False, default=upload, help='input image to use')
-    parser.add_argument('--model', type=str, default=(r'C:\Users\n.strokova\Pictures\super-resolution\models\SUB_model_path.pth'), help='model file to use')
+    parser.add_argument('--model', type=str, default=(best_model = 'model_path.pth'), help='model file to use')
     parser.add_argument('--output', type=str, default='test.jpg', help='where to save the output image')
     args = parser.parse_args()
     print(args)
