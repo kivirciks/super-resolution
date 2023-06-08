@@ -68,8 +68,8 @@ class ResnetBlock(nn.Module):
         self.bn = nn.BatchNorm2d(num_channel)
         #self.activation = nn.Sigmoid()
         #self.activation = nn.LeakyReLU()
-        #self.activation = nn.ELU()
-        self.activation = nn.Tanh()
+        self.activation = nn.ELU()
+        #self.activation = nn.Tanh()
         #self.activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
