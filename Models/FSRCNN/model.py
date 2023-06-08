@@ -34,8 +34,8 @@ class Net(torch.nn.Module):
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.Sigmoid()))
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.LeakyReLU()))
         #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.ELU()))
-        self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.PReLU()))
-        #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.Tanh()))
+        #self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.PReLU()))
+        self.layers.append(nn.Sequential(nn.Conv2d(in_channels=s, out_channels=d, kernel_size=1, stride=1, padding=0), nn.Tanh()))
 
         self.mid_part = torch.nn.Sequential(*self.layers)
         # ===========================================================
@@ -49,7 +49,7 @@ class Net(torch.nn.Module):
         # ===========================================================
         # Изменения здесь
         # ===========================================================
-        prune.random_unstructured(self.last_part, name="weight", amount=0.1)
+        #prune.random_unstructured(self.last_part, name="weight", amount=0.1)
 
 
     def forward(self, x):
