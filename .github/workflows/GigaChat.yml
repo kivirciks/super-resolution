@@ -1,72 +1,29 @@
 name: GigaChat
 on: [workflow_dispatch]
 jobs:
-  EDSR:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: ["3.6"]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.6'        
-        
-      - name: checkout repo content
-        uses: actions/checkout@v3
-      - name: install numpy
-        run: pip install numpy
-      - name: install yadisk
-        run: pip install yadisk
-      - name: install torch
-        run: pip install torch
-      - name: install torchvision
-        run: pip install torchvision
-      - name: install PIL
-        run: pip install Pillow
-      - name: install six
-        run: pip install six
-      - name: install PuzzleLib
-        run: pip install PuzzleLib
-      - name: train model and save result
-        working-directory: ./Models
-        env:
-          DB_USERNAME: github
-          DB_PASSWORD: ${{secrets.DBPASSWORD}}
-        run: python main.py -m edsr
-
   SubPixelCNN:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ["3.6"]
+        python-version: ["3.8"]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v2
         with:
-          python-version: '3.6'        
-        
-      - name: checkout repo content
-        uses: actions/checkout@v3
-      - name: install numpy
-        run: pip install numpy
-      - name: install yadisk
-        run: pip install yadisk
-      - name: install torch
-        run: pip install torch
-      - name: install torchvision
-        run: pip install torchvision
-      - name: install PIL
-        run: pip install Pillow
-      - name: install six
-        run: pip install six
-      - name: install PuzzleLib
-        run: pip install PuzzleLib
-      - name: train model and save result
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install numpy
+          pip install yadisk
+          pip install torch
+          pip install torchvision
+          pip install Pillow
+          pip install six
+          pip install PuzzleLib
+
+      - name: Train model and save result
         working-directory: ./Models
-        env:
-          DB_USERNAME: github
-          DB_PASSWORD: ${{secrets.DBPASSWORD}}
         run: python main.py -m sub
 
       - name: Configure Git
@@ -74,8 +31,13 @@ jobs:
           git config --global user.name 'stnastyast'
           git config --global user.email 's.anastasia.strokova@gmail.com'
 
-      - name: Commit and Push Changes
-        run: |
-          git ./Models/test_path.pth
-          git commit -m "Add trained model weights"
-          git push origin main
+      - name: Add changes
+        working-directory: ./Models
+        run: git add test_path.pth
+
+      - name: Commit changes
+        working-directory: ./Models
+        run: git commit -m "Add trained model weights"
+
+      - name: Push changes
+        run: git push origin main
