@@ -1,0 +1,81 @@
+name: GigaChat
+on: [workflow_dispatch]
+jobs:
+  EDSR:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.6"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6'        
+        
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install numpy
+        run: pip install numpy
+      - name: install yadisk
+        run: pip install yadisk
+      - name: install torch
+        run: pip install torch
+      - name: install torchvision
+        run: pip install torchvision
+      - name: install PIL
+        run: pip install Pillow
+      - name: install six
+        run: pip install six
+      - name: install PuzzleLib
+        run: pip install PuzzleLib
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m edsr
+
+  SubPixelCNN:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.6"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6'        
+        
+      - name: checkout repo content
+        uses: actions/checkout@v3
+      - name: install numpy
+        run: pip install numpy
+      - name: install yadisk
+        run: pip install yadisk
+      - name: install torch
+        run: pip install torch
+      - name: install torchvision
+        run: pip install torchvision
+      - name: install PIL
+        run: pip install Pillow
+      - name: install six
+        run: pip install six
+      - name: install PuzzleLib
+        run: pip install PuzzleLib
+      - name: train model and save result
+        working-directory: ./Models
+        env:
+          DB_USERNAME: github
+          DB_PASSWORD: ${{secrets.DBPASSWORD}}
+        run: python main.py -m sub
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'stnastyast'
+          git config --global user.email 's.anastasia.strokova@gmail.com'
+
+      - name: Commit and Push Changes
+        run: |
+          git ./Models/test_path.pth
+          git commit -m "Add trained model weights"
+          git push origin main
