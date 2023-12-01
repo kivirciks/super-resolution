@@ -33,7 +33,7 @@ jobs:
 
       - name: Add changes
         working-directory: ./Models
-        run: git add test_path.pth
+        run: git add SUB_model_path.pth
 
       - name: Commit changes
         working-directory: ./Models
