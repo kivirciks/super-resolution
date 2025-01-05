@@ -108,7 +108,7 @@ cloud_api:disk.info # Доступ к информации о Диске
 Пример сохранения весов для модели
 ```python
 import yadisk
-y = yadisk.YaDisk(token="y0_AgAAAAAZdSRIAAnWpQAAAADiIR-G69xDHp3vSUKGjYeHSNjcH6B_kQw")
+y = yadisk.YaDisk(token="___")
 # Сохранение весов
 model_edsr.save_weights(y.upload('edsr_weights.h5', '/weights_dir/edsr_weights.h5'))
 ```
